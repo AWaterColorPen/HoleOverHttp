@@ -5,7 +5,8 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml;
+using Newtonsoft.Json;
+using Serilog;
 
 namespace HoleOverHttp.WsProvider
 {
