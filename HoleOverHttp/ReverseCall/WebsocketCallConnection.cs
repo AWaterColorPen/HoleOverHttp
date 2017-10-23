@@ -9,7 +9,7 @@ namespace HoleOverHttp.ReverseCall
 {
     internal class WebsocketCallConnection : ICallConnection, IDisposable
     {
-        private static readonly int SizeOfGuid = Guid.Empty.ToByteArray().Length;
+        private const int SizeOfGuid = 16;
         private static readonly TimeSpan CallHandleTimeout = TimeSpan.FromMinutes(1);
 
         private readonly ConcurrentDictionary<Guid, CallTaskHandle> _callHandles =
