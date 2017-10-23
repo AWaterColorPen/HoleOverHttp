@@ -1,4 +1,4 @@
-﻿namespace HoleOverHttp.WsProvider
+﻿namespace HoleOverHttp.Core
 {
     public interface IAuthorizationProvider
     {

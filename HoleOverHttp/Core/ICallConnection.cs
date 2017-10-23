@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace HoleOverHttp.ReverseCall
+namespace HoleOverHttp.Core
 {
     public interface ICallConnection
     {

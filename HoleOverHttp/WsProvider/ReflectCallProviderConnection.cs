@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using HoleOverHttp.Core;
 using Newtonsoft.Json;
 
 namespace HoleOverHttp.WsProvider

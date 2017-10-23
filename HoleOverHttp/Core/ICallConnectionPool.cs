@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace HoleOverHttp.ReverseCall
+namespace HoleOverHttp.Core
 {
     public interface ICallConnectionPool
     {
