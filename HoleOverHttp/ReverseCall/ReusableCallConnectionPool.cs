@@ -1,6 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using HoleOverHttp.Core;
 
 namespace HoleOverHttp.ReverseCall
 {
@@ -53,24 +54,16 @@ namespace HoleOverHttp.ReverseCall
 
         public ICallConnection FindByNamespace(string ns)
         {
-            if (_pool.TryGetValue(ns, out var connections))
-            {
-                return RoundRobin(connections.Where(c => c.IsAlive).ToArray());
-            }
-
-            return null;
+            return _pool.TryGetValue(ns, out var connections)
+                ? RoundRobin(connections.Where(c => c.IsAlive).ToArray())
+                : null;
         }
 
         public IEnumerable<string> AllNamespaces => _pool.Keys;
 
-        private ICallConnection RoundRobin(ICallConnection[] connections)
+        private ICallConnection RoundRobin(IReadOnlyList<ICallConnection> connections)
         {
-            if (connections.Length == 0)
-            {
-                return null;
-            }
-
-            return connections[_roundRobinCounter++ % connections.Length];
+            return connections.Count == 0 ? null : connections[(int) (_roundRobinCounter++ % connections.Count)];
         }
     }
 }
