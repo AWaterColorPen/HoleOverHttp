@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using HoleOverHttp.Core;
 
 namespace HoleOverHttp.ReverseCall
 {
