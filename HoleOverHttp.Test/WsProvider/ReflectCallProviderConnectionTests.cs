@@ -28,7 +28,9 @@ namespace HoleOverHttp.Test.WsProvider
 
             var mockAuthorizationProvider = new Mock<IAuthorizationProvider>();
             _reflectCallProviderConnection =
-                new ReflectCallProviderConnection(_target, "host", "namespace", mockAuthorizationProvider.Object);
+                new ReflectCallProviderConnection("host", "namespace", mockAuthorizationProvider.Object);
+
+            _reflectCallProviderConnection.RegisterService(_target);
         }
 
         [TestCleanup]
