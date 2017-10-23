@@ -12,7 +12,6 @@ namespace HoleOverHttp.WsProvider
 {
     public class ReflectCallProviderConnection : CallProviderConnection
     {
-        private readonly object _lock = new object(); 
         private readonly ConcurrentDictionary<string, Tuple<MethodInfo, object>> _methods =
             new ConcurrentDictionary<string, Tuple<MethodInfo, object>>();
 
