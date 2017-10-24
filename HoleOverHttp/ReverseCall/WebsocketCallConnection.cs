@@ -12,12 +12,12 @@ namespace HoleOverHttp.ReverseCall
     public class WebsocketCallConnection : ICallConnection, IDisposable
     {
         private static readonly int SizeOfGuid = Guid.Empty.ToByteArray().Length;
-        private static readonly TimeSpan CallHandleTimeout = TimeSpan.FromMinutes(1);
+        private static readonly TimeSpan CallHandleTimeout = TimeSpan.FromMinutes(10);
 
         private readonly ConcurrentDictionary<Guid, CallTaskHandle> _callHandles =
             new ConcurrentDictionary<Guid, CallTaskHandle>();
 
-        private readonly SemaphoreSlim _sem = new SemaphoreSlim(100, 100);
+        private readonly SemaphoreSlim _sem = new SemaphoreSlim(1, 1);
 
         private readonly WebSocket _socket;
 
@@ -61,7 +61,7 @@ namespace HoleOverHttp.ReverseCall
         public void Dispose()
         {
             _sem?.Dispose();
-            //            _socket?.Dispose();
+            _socket?.Dispose();
         }
 
         private void CleanupHandle(Guid callid)
@@ -82,7 +82,6 @@ namespace HoleOverHttp.ReverseCall
                     while (true)
                     {
                         var result = await _socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-
                         if (result.MessageType == WebSocketMessageType.Binary)
                         {
                             ms.Write(buffer, 0, result.Count);
@@ -111,11 +110,11 @@ namespace HoleOverHttp.ReverseCall
         {
             foreach (var callHandle in _callHandles)
             {
-                if (callHandle.Value.StartTime + CallHandleTimeout <= DateTime.Now) continue;
-                if (callHandle.Value.Source.TrySetCanceled())
-                {
-                    CleanupHandle(callHandle.Key);
-                }
+                // if (callHandle.Value.StartTime + CallHandleTimeout <= DateTime.Now) continue;
+                //if (callHandle.Value.Source.TrySetCanceled())
+                //{
+                //    CleanupHandle(callHandle.Key);
+                //}
             }
         }
 
@@ -132,7 +131,7 @@ namespace HoleOverHttp.ReverseCall
 
             if (_callHandles.TryGetValue(callid, out var handle))
             {
-                handle.Source.SetResult(br.ReadBytes((int)message.Length));
+                handle.Source.SetResult(br.ReadBytes((int) message.Length));
             }
 
             CleanupHandle(callid);

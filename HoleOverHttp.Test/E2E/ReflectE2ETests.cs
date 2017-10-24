@@ -154,6 +154,15 @@ namespace HoleOverHttp.Test.E2E
             }
         }
 
+        [TestMethod]
+        public void TestReflectE2E_DummyAuthorizationProvider()
+        {
+            var dummyAuthorizationProvider = new DummyAuthorizationProvider();
+            Assert.AreEqual("Key", dummyAuthorizationProvider.Key);
+            Assert.AreEqual("Value", dummyAuthorizationProvider.Value);
+        }
+
+
         private class DummyAuthorizationProvider : IAuthorizationProvider
         {
             public string Key { get; } = "Key";

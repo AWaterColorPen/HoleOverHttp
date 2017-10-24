@@ -24,7 +24,6 @@ namespace HoleOverHttp.WsProvider
         {
             foreach (var method in service.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public))
             {
-                
                 if (_methods.ContainsKey(method.Name))
                 {
                     throw new Exception(
