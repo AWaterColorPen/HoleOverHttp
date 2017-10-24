@@ -1,14 +1,18 @@
-using System.Net;
+using System;
+using System.Net.WebSockets;
+using System.Threading;
 using System.Threading.Tasks;
 using HoleOverHttp.Core;
+using HoleOverHttp.ReverseCall;
+using Microsoft.Net.Http.Server;
 
 namespace HoleOverHttp.Test.E2E
 {
-    internal class FakeHttpService
+    internal class FakeHttpService : IDisposable
     {
-        private readonly HttpListener _listener = new HttpListener();
+        private readonly ICallConnectionPool _callConnectionPool;
 
-        private ICallConnectionPool _callConnectionPool;
+        private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         public FakeHttpService(ICallConnectionPool callConnectionPool)
         {
@@ -17,72 +21,59 @@ namespace HoleOverHttp.Test.E2E
 
         public void Start(string[] prefixes)
         {
-            _listener.Prefixes.Clear();
+            var settings = new WebListenerSettings();
             foreach (var prefix in prefixes)
             {
-                _listener.Prefixes.Add(prefix);
+                settings.UrlPrefixes.Add(prefix);
             }
 
             Task.Run(() =>
             {
-                while (_listener.IsListening)
+                using (var listener = new WebListener(settings))
                 {
-                    //try
-                    //{
-                    //    var context = _listener.GetContext();
-                    //    if (context.Request.IsWebSocketRequest)
-                    //    {
-                    //        Task.Run(async () =>
-                    //        {
-                    //            var socket = await context.AcceptWebSocketAsync(null)
-                    //            var ns = Request.Query["ns"].FirstOrDefault();
+                    listener.Start();
+                    while (!_cancellationTokenSource.Token.IsCancellationRequested)
+                    {
+                        var context = listener.AcceptAsync().Result;
+                        if (context.IsWebSocketRequest)
+                        {
+                            Task.Run(() =>
+                            {
+                                var socket = context.AcceptWebSocketAsync().Result;
+                                using (var connection = new WebsocketCallConnection("ns", socket))
+                                {
+                                    _callConnectionPool.Register(connection);
 
-                    //            if (string.IsNullOrWhiteSpace(ns))
-                    //            {
-                    //                // random
-                    //                ns = Guid.NewGuid().ToString();
-                    //            }
-
-                    //            using (var connection = new WebsocketCallConnection(ns, socket))
-                    //            {
-                    //                _callConnectionPool.Register(connection);
-
-                    //                try
-                    //                {
-                    //                    await connection.WorkUntilDisconnect();
-                    //                }
-                    //                catch (Exception e)
-                    //                {
-                    //                    // TODO ?? cannot close
-
-                    //                    await socket.CloseOutputAsync(WebSocketCloseStatus.InternalServerError,
-                    //                        e.ToString(), CancellationToken.None);
-                    //                    await socket.CloseAsync(WebSocketCloseStatus.InternalServerError, e.ToString(),
-                    //                        CancellationToken.None);
-                    //                    socket.Abort();
-                    //                    socket.Dispose();
-                    //                }
-                    //                finally
-                    //                {
-                    //                    _callConnectionPool.UnRegister(connection);
-                    //                }
-                    //            }
-                    //        });
-                    //    }
-
-                    //}
-                    //catch
-                    //{
-                    //    // Ignored
-                    //}
+                                    try
+                                    {
+                                        connection.WorkUntilDisconnect().Wait();
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        socket.CloseOutputAsync(WebSocketCloseStatus.InternalServerError, e.ToString(),
+                                            CancellationToken.None).Wait();
+                                        socket.CloseAsync(WebSocketCloseStatus.InternalServerError, e.ToString(),
+                                            CancellationToken.None).Wait();
+                                        socket.Abort();
+                                        socket.Dispose();
+                                    }
+                                    finally
+                                    {
+                                        _callConnectionPool.UnRegister(connection);
+                                    }
+                                }
+                            });
+                        }
+                    }
                 }
             });
         }
 
-        public void Stop()
+
+
+        public void Dispose()
         {
-            _listener?.Stop();
-            _listener?.Close();
+            _cancellationTokenSource?.Dispose();
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using HoleOverHttp.Core;
+using Serilog;
 
 namespace HoleOverHttp.ReverseCall
 {
@@ -78,7 +79,7 @@ namespace HoleOverHttp.ReverseCall
             {
                 using (var ms = new MemoryStream())
                 {
-                    for (; ; )
+                    while (true)
                     {
                         var result = await _socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
 
@@ -87,20 +88,18 @@ namespace HoleOverHttp.ReverseCall
                             ms.Write(buffer, 0, result.Count);
                         }
 
-                        if (result.EndOfMessage)
-                        {
-                            ms.Position = 0;
+                        if (!result.EndOfMessage) continue;
+                        ms.Position = 0;
 
-                            try
-                            {
-                                ConsumeOneMessage(ms);
-                            }
-                            catch
-                            {
-                                // TODO log
-                            }
-                            break;
+                        try
+                        {
+                            ConsumeOneMessage(ms);
                         }
+                        catch (Exception e)
+                        {
+                            Log.Error(e, "");
+                        }
+                        break;
                     }
                 }
 
@@ -112,12 +111,10 @@ namespace HoleOverHttp.ReverseCall
         {
             foreach (var callHandle in _callHandles)
             {
-                if (callHandle.Value.StartTime + CallHandleTimeout > DateTime.Now)
+                if (callHandle.Value.StartTime + CallHandleTimeout <= DateTime.Now) continue;
+                if (callHandle.Value.Source.TrySetCanceled())
                 {
-                    if (callHandle.Value.Source.TrySetCanceled())
-                    {
-                        CleanupHandle(callHandle.Key);
-                    }
+                    CleanupHandle(callHandle.Key);
                 }
             }
         }

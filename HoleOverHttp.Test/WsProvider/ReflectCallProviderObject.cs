@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace HoleOverHttp.Test.WsProvider
 {
-    internal class ReflectCallProviderObject
+    public class ReflectCallProviderObject
     {
         public bool NoParameterMethod()
         {
