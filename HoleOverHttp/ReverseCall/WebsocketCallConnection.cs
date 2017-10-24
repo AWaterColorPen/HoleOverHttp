@@ -8,7 +8,7 @@ using HoleOverHttp.Core;
 
 namespace HoleOverHttp.ReverseCall
 {
-    internal class WebsocketCallConnection : ICallConnection, IDisposable
+    public class WebsocketCallConnection : ICallConnection, IDisposable
     {
         private static readonly int SizeOfGuid = Guid.Empty.ToByteArray().Length;
         private static readonly TimeSpan CallHandleTimeout = TimeSpan.FromMinutes(1);
