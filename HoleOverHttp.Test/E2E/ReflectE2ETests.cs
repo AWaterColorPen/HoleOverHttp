@@ -216,7 +216,23 @@ namespace HoleOverHttp.Test.E2E
                 var jobject = JsonConvert.DeserializeObject<JObject>(Encoding.UTF8.GetString(result));
                 Assert.AreEqual(2, jobject.Count);
                 Assert.IsTrue((int) jobject["latency"] >= 0);
-                Assert.IsTrue(jobject["result"].First.Count() > 6);
+
+                // ReflectCallProviderObject class has 7 methods.
+                Assert.IsTrue(jobject["result"].Count() >= 7);
+
+                // ReflectCallProviderConnection.MethodDefinition class has 4 properties.
+                Assert.AreEqual(4, jobject["result"][0].Count());
+
+                // check type sample for custom class argument.
+                var mixedParameterMethod = jobject["result"].First(v => v["MethodName"].Value<string>() == "MixedParameterMethod");
+                Assert.IsTrue(mixedParameterMethod.Count() == 4);
+                // mixedParameterMethod.
+                Assert.AreEqual(3, mixedParameterMethod["Arguments"].Count());
+                Assert.AreEqual(2, mixedParameterMethod["Arguments"]["p3"].Count());
+                Assert.AreEqual("HoleOverHttp.Test.WsProvider.DummyClass", mixedParameterMethod["Arguments"]["p3"]["Type"].Value<string>());
+                Assert.AreEqual(2, mixedParameterMethod["Arguments"]["p3"]["Sample"].Count());
+                Assert.AreEqual(false, (bool) mixedParameterMethod["Arguments"]["p3"]["Sample"]["P1"]);
+                Assert.AreEqual(false, (bool )mixedParameterMethod["Arguments"]["p3"]["Sample"]["P2"]);
                 tokenSource.Cancel();
             }
         }
