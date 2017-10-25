@@ -110,10 +110,10 @@ namespace HoleOverHttp.WsProvider
 
         internal class MethodDefinition
         {
-            public string Instance { get; set; }
-            public string MethodName { get; set; }
-            public string ReturnType { get; set; }
-            public IDictionary<string, IDictionary<string, object>> Arguments { get; set; }
+            public string Instance;
+            public string MethodName;
+            public string ReturnType;
+            public IDictionary<string, IDictionary<string, object>> Arguments;
         }
     }
 }
