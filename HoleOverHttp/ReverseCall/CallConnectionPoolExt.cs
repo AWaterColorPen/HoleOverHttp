@@ -14,13 +14,17 @@ namespace HoleOverHttp.ReverseCall
             byte[] param)
         {
             var connection = connectionPool.FindByNamespace(ns);
-
             if (connection == null)
             {
                 return null;
             }
 
             return await connection.CallAsync(method, param);
+        }
+
+        public static async Task<byte[]> ProvideAvailableMethodsAsync(this ICallConnectionPool connectionPool, string ns)
+        {
+            return await CallAsync(connectionPool, ns, string.Empty, new byte[0]);
         }
     }
 }

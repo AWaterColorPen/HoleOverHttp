@@ -13,6 +13,8 @@ namespace HoleOverHttp.WsProvider
 {
     public abstract class CallProviderConnection
     {
+        private static readonly int SizeOfGuid = Guid.Empty.ToByteArray().Length;
+
         private readonly string _host;
         private readonly string _namespace;
 
@@ -76,7 +78,7 @@ namespace HoleOverHttp.WsProvider
                                 ms.Position = 0;
                                 var br = new BinaryReader(ms);
 
-                                var id = br.ReadBytes(16);
+                                var id = br.ReadBytes(SizeOfGuid);
                                 var method = br.ReadString();
                                 var param = br.ReadBytes((int)ms.Length);
 

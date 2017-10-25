@@ -22,12 +22,18 @@ namespace HoleOverHttp.WsProvider
 
         public void RegisterService(object service)
         {
-            foreach (var method in service.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public))
+            foreach (var method in service.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
             {
+                if (string.IsNullOrEmpty(method.Name))
+                {
+                    throw new Exception(
+                        $"service:{service} method:{method.Name} was invalid method name to register.");
+                }
+
                 if (_methods.ContainsKey(method.Name))
                 {
                     throw new Exception(
-                        $"service:{service} rmethod:{method.Name} were already registed by other serivce:{_methods[method.Name]}.");
+                        $"service:{service} method:{method.Name} was already registed by other serivce:{_methods[method.Name]}.");
                 }
 
                 _methods.TryAdd(method.Name, new Tuple<MethodInfo, object>(method, service));
@@ -36,9 +42,45 @@ namespace HoleOverHttp.WsProvider
 
         public override Task<object> ProcessCall(string method, byte[] bytes)
         {
+            if (string.IsNullOrEmpty(method))
+            {
+                return ProvideAvailableMethods();
+            }
+
             var methodInfo = _methods[method].Item1;
             var paramObjects = MethodParameterParser(methodInfo, bytes);
             return Task.Run(() => methodInfo.Invoke(_methods[method].Item2, paramObjects));
+        }
+
+        public Task<object> ProvideAvailableMethods()
+        {
+            IDictionary<string, object> BuildParameterTypeDescription(Type type)
+            {
+                var description = new Dictionary<string, object>
+                {
+                    ["Type"] = $"{type}"
+                };
+
+                if (type.IsValueType ||
+                    type.GetConstructor(Type.EmptyTypes) != null)
+                {
+                    description["Sample"] = Activator.CreateInstance(type);
+                }
+
+                return description;
+            }
+
+            return
+                Task.Run(() => (object) _methods.Select(
+                    method => new MethodDefinition
+                    {
+                        MethodName = method.Key,
+                        Instance = $"{method.Value.Item2}",
+                        ReturnType = $"{method.Value.Item1.ReturnType}",
+                        Arguments = method.Value.Item1.GetParameters().ToDictionary(
+                            v => v.Name,
+                            v => BuildParameterTypeDescription(v.ParameterType))
+                    }).ToList());
         }
 
         public static object[] MethodParameterParser(MethodInfo methodInfo, byte[] bytes)
@@ -64,6 +106,14 @@ namespace HoleOverHttp.WsProvider
                                     : v.Value) ?? throw new InvalidOperationException())
                             : JsonConvert.DeserializeObject(param.ToString(), v.Value));
                 }).ToArray();
+        }
+
+        internal class MethodDefinition
+        {
+            public string Instance { get; set; }
+            public string MethodName { get; set; }
+            public string ReturnType { get; set; }
+            public IDictionary<string, IDictionary<string, object>> Arguments { get; set; }
         }
     }
 }

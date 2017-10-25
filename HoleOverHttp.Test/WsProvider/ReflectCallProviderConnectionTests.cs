@@ -87,35 +87,42 @@ namespace HoleOverHttp.Test.WsProvider
             {
                 var methodInfo = _methods["MixedParameterMethod"];
 
-                var bytes1 = Encoding.UTF8.GetBytes("{p1:0,p2:{\"key\":0}}");
+                var bytes1 = Encoding.UTF8.GetBytes("{p1:0,p2:{\"key\":0},p3:{P1:1,P2:1}}");
                 var objects1 = ReflectCallProviderConnection.MethodParameterParser(methodInfo, bytes1);
-                Assert.AreEqual(2, objects1.Length);
+                Assert.AreEqual(3, objects1.Length);
                 Assert.AreEqual(0, (int) objects1[0]);
                 Assert.AreEqual(1, ((IDictionary<string, int>) objects1[1]).Count);
+                Assert.AreEqual(true, ((DummyClass) objects1[2]).P1);
+                Assert.AreEqual(true, ((DummyClass) objects1[2]).P2);
 
                 var bytes2 = Encoding.UTF8.GetBytes("{p1:0,p2:{\"key\":-1}}");
                 var objects2 = ReflectCallProviderConnection.MethodParameterParser(methodInfo, bytes2);
-                Assert.AreEqual(2, objects2.Length);
+                Assert.AreEqual(3, objects2.Length);
                 Assert.AreEqual(0, (int) objects2[0]);
                 Assert.AreEqual(1, ((IDictionary<string, int>) objects2[1]).Count);
+                Assert.AreEqual(null, (DummyClass) objects2[2]);
 
                 var bytes3 = Encoding.UTF8.GetBytes("{p1:0,p2:{}}");
                 var objects3 = ReflectCallProviderConnection.MethodParameterParser(methodInfo, bytes3);
-                Assert.AreEqual(2, objects3.Length);
+                Assert.AreEqual(3, objects3.Length);
                 Assert.AreEqual(0, (int) objects3[0]);
                 Assert.AreEqual(0, ((IDictionary<string, int>) objects3[1]).Count);
+                Assert.AreEqual(null, (DummyClass) objects3[2]);
 
-                var bytes4 = Encoding.UTF8.GetBytes("{p1:0,p2:{key:0}}");
+                var bytes4 = Encoding.UTF8.GetBytes("{p1:0,p2:{key:0},p3:{P1:1,P2:1}}");
                 var objects4 = ReflectCallProviderConnection.MethodParameterParser(methodInfo, bytes4);
-                Assert.AreEqual(2, objects4.Length);
+                Assert.AreEqual(3, objects4.Length);
                 Assert.AreEqual(0, (int) objects4[0]);
                 Assert.AreEqual(1, ((IDictionary<string, int>) objects4[1]).Count);
+                Assert.AreEqual(true, ((DummyClass) objects4[2]).P1);
+                Assert.AreEqual(true, ((DummyClass) objects4[2]).P2);
 
                 var bytes5 = Encoding.UTF8.GetBytes("{p1:0}");
                 var objects5 = ReflectCallProviderConnection.MethodParameterParser(methodInfo, bytes5);
-                Assert.AreEqual(2, objects5.Length);
+                Assert.AreEqual(3, objects5.Length);
                 Assert.AreEqual(0, (int) objects5[0]);
                 Assert.AreEqual(null, objects5[1]);
+                Assert.AreEqual(null, (DummyClass) objects5[2]);
             }
         }
 
@@ -222,11 +229,11 @@ namespace HoleOverHttp.Test.WsProvider
             // case 3: mixed parameter case.
             {
                 var result1 = _reflectCallProviderConnection
-                    .ProcessCall("MixedParameterMethod", Encoding.UTF8.GetBytes("{p1:0,p2:{\"key\":0}}")).Result;
+                    .ProcessCall("MixedParameterMethod", Encoding.UTF8.GetBytes("{p1:0,p2:{\"key\":0},p3:{P1:1,P2:1}}")).Result;
                 Assert.AreEqual(true, (bool) result1);
 
                 var result2 = _reflectCallProviderConnection
-                    .ProcessCall("MixedParameterMethod", Encoding.UTF8.GetBytes("{p1:0,p2:{\"key\":-1}}")).Result;
+                    .ProcessCall("MixedParameterMethod", Encoding.UTF8.GetBytes("{p1:0,p2:{\"key\":-1},p3:{P1:1,P2:1}}")).Result;
                 Assert.AreEqual(false, (bool) result2);
 
                 var result3 = _reflectCallProviderConnection
@@ -234,7 +241,7 @@ namespace HoleOverHttp.Test.WsProvider
                 Assert.AreEqual(false, (bool) result3);
 
                 var result4 = _reflectCallProviderConnection
-                    .ProcessCall("MixedParameterMethod", Encoding.UTF8.GetBytes("{p1:0,p2:{key:0}}")).Result;
+                    .ProcessCall("MixedParameterMethod", Encoding.UTF8.GetBytes("{p1:0,p2:{key:0},p3:{P1:1,P2:1}}")).Result;
                 Assert.AreEqual(true, (bool) result4);
 
                 var result5 = _reflectCallProviderConnection
