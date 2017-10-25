@@ -47,8 +47,7 @@ namespace HoleOverHttp.ReverseCall
                 writer.Write(callid.ToByteArray());
                 writer.Write(method);
                 writer.Write(param);
-
-
+                
                 await _socket.SendAsync(new ArraySegment<byte>(ms.ToArray()), WebSocketMessageType.Binary, true,
                     CancellationToken.None);
 

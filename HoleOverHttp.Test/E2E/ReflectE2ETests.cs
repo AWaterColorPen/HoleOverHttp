@@ -80,9 +80,11 @@ namespace HoleOverHttp.Test.E2E
                 Assert.AreEqual(1, namespaces1.Count);
                 Assert.AreEqual("ns", namespaces1[0].Item1);
                 Assert.AreEqual(1, namespaces1[0].Item2);
+
                 tokenSource.Cancel();
 
                 Thread.Sleep(TimeSpan.FromSeconds(1));
+
                 var namespaces2 = callConnectionPool.AllNamespaces.ToList();
                 Assert.AreEqual(0, namespaces2.Count);
             }
@@ -115,6 +117,7 @@ namespace HoleOverHttp.Test.E2E
                 Assert.AreEqual(2, jobject.Count);
                 Assert.IsTrue((bool) jobject["result"]);
                 Assert.IsTrue((int) jobject["latency"] >= 0);
+
                 tokenSource.Cancel();
             }
         }
@@ -183,6 +186,53 @@ namespace HoleOverHttp.Test.E2E
                     callConnectionPool.CallAsync("ns", "TimeOutMethod", Encoding.UTF8.GetBytes("{sleepTime:6000}"))
                         .Result);
 
+                tokenSource.Cancel();
+            }
+        }
+
+        [TestMethod]
+        public void TestReflectE2E_ProvideAvailableMethods()
+        {
+            var tokenSource = new CancellationTokenSource();
+            using (var scope = _container.BeginLifetimeScope())
+            {
+                var callProvider =
+                    scope.Resolve<ReflectCallProviderConnection>(
+                        new NamedParameter("host", "localhost:23333"),
+                        new NamedParameter("namespace", "ns"));
+
+                callProvider.Secure = false;
+                callProvider.RegisterService(new ReflectCallProviderObject());
+                Task.Run(async () =>
+                {
+                    await callProvider.ServeAsync(tokenSource.Token);
+                }, CancellationToken.None);
+
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+
+                var callConnectionPool = scope.Resolve<ICallConnectionPool>();
+                var result = callConnectionPool.ProvideAvailableMethodsAsync("ns").Result;
+
+                var jobject = JsonConvert.DeserializeObject<JObject>(Encoding.UTF8.GetString(result));
+                Assert.AreEqual(2, jobject.Count);
+                Assert.IsTrue((int) jobject["latency"] >= 0);
+
+                // ReflectCallProviderObject class has 7 methods.
+                Assert.IsTrue(jobject["result"].Count() >= 7);
+
+                // ReflectCallProviderConnection.MethodDefinition class has 4 properties.
+                Assert.AreEqual(4, jobject["result"][0].Count());
+
+                // check type sample for custom class argument.
+                var mixedParameterMethod = jobject["result"].First(v => v["MethodName"].Value<string>() == "MixedParameterMethod");
+                Assert.IsTrue(mixedParameterMethod.Count() == 4);
+                // mixedParameterMethod.
+                Assert.AreEqual(3, mixedParameterMethod["Arguments"].Count());
+                Assert.AreEqual(2, mixedParameterMethod["Arguments"]["p3"].Count());
+                Assert.AreEqual("HoleOverHttp.Test.WsProvider.DummyClass", mixedParameterMethod["Arguments"]["p3"]["Type"].Value<string>());
+                Assert.AreEqual(2, mixedParameterMethod["Arguments"]["p3"]["Sample"].Count());
+                Assert.AreEqual(false, (bool) mixedParameterMethod["Arguments"]["p3"]["Sample"]["P1"]);
+                Assert.AreEqual(false, (bool )mixedParameterMethod["Arguments"]["p3"]["Sample"]["P2"]);
                 tokenSource.Cancel();
             }
         }

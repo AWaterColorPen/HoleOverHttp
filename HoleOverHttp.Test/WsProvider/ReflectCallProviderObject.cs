@@ -16,9 +16,9 @@ namespace HoleOverHttp.Test.WsProvider
             return p1 == 0 && p2 == 0;
         }
 
-        public bool MixedParameterMethod(int p1, IDictionary<string, int> p2)
+        public bool MixedParameterMethod(int p1, IDictionary<string, int> p2, DummyClass p3)
         {
-            return p2 != null && p2.ContainsKey("key") && p2["key"] == 0;
+            return p2 != null && p2.ContainsKey("key") && p2["key"] == 0 && p3 != null && p3.P1 && p3.P2;
         }
 
         public bool StringMethod(string p1)
@@ -41,5 +41,12 @@ namespace HoleOverHttp.Test.WsProvider
             Thread.Sleep(sleepTime);
             return true;
         }
+    }
+    
+    public class DummyClass
+    {
+        public bool P1;
+
+        public bool P2;
     }
 }
