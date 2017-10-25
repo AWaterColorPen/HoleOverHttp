@@ -36,6 +36,8 @@ namespace HoleOverHttp.Test.E2E
                 var fakeHttpService = scope.Resolve<FakeHttpService>();
                 fakeHttpService.Start(new[] { "http://localhost:23333/ws/" });
             }
+
+            Thread.Sleep(TimeSpan.FromSeconds(1));
         }
 
         [ClassCleanup]
