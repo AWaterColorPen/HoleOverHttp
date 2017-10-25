@@ -92,6 +92,8 @@ namespace HoleOverHttp.Test.ReverseCall
 
             public string Namespace { get; }
             public bool IsAlive { get; set; } = true;
+            public TimeSpan TimeOutSetting { get; set; }
+
             public Task<byte[]> CallAsync(string method, byte[] param)
             {
                 throw new NotImplementedException();

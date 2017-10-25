@@ -40,7 +40,11 @@ namespace HoleOverHttp.Test.E2E
                             Task.Run(() =>
                             {
                                 var socket = context.AcceptWebSocketAsync().Result;
-                                using (var connection = new WebsocketCallConnection("ns", socket))
+                                using (var connection =
+                                    new WebsocketCallConnection("ns", socket)
+                                    {
+                                        TimeOutSetting = TimeSpan.FromSeconds(5)
+                                    })
                                 {
                                     _callConnectionPool.Register(connection);
 

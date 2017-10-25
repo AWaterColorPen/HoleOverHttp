@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace HoleOverHttp.Test.WsProvider
 {
@@ -33,6 +34,12 @@ namespace HoleOverHttp.Test.WsProvider
         public bool DateTimeOffsetMethod(DateTimeOffset p1, DateTimeOffset? p2)
         {
             return p1 < DateTimeOffset.UtcNow && p2 < DateTimeOffset.Now;
+        }
+
+        public bool TimeOutMethod(int sleepTime)
+        {
+            Thread.Sleep(sleepTime);
+            return true;
         }
     }
 }

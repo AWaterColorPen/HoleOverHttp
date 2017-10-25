@@ -156,13 +156,42 @@ namespace HoleOverHttp.Test.E2E
         }
 
         [TestMethod]
+        public void TestReflectE2E_TimeOutCall()
+        {
+            var tokenSource = new CancellationTokenSource();
+            using (var scope = _container.BeginLifetimeScope())
+            {
+                var callProvider =
+                    scope.Resolve<ReflectCallProviderConnection>(
+                        new NamedParameter("host", "localhost:23333"),
+                        new NamedParameter("namespace", "ns"));
+
+                callProvider.Secure = false;
+                callProvider.RegisterService(new ReflectCallProviderObject());
+                Task.Run(async () =>
+                {
+                    await callProvider.ServeAsync(tokenSource.Token);
+                }, CancellationToken.None);
+
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+
+                var callConnectionPool = scope.Resolve<ICallConnectionPool>();
+
+                Assert.ThrowsException<AggregateException>(() =>
+                    callConnectionPool.CallAsync("ns", "TimeOutMethod", Encoding.UTF8.GetBytes("{sleepTime:6000}"))
+                        .Result);
+
+                tokenSource.Cancel();
+            }
+        }
+
+        [TestMethod]
         public void TestReflectE2E_DummyAuthorizationProvider()
         {
             var dummyAuthorizationProvider = new DummyAuthorizationProvider();
             Assert.AreEqual("Key", dummyAuthorizationProvider.Key);
             Assert.AreEqual("Value", dummyAuthorizationProvider.Value);
         }
-
 
         private class DummyAuthorizationProvider : IAuthorizationProvider
         {

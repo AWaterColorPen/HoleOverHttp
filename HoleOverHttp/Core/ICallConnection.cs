@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace HoleOverHttp.Core
 {
@@ -7,6 +8,8 @@ namespace HoleOverHttp.Core
         string Namespace { get; }
 
         bool IsAlive { get; }
+
+        TimeSpan TimeOutSetting { get; set; }
 
         Task<byte[]> CallAsync(string method, byte[] param);
     }
