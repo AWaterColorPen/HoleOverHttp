@@ -72,7 +72,7 @@ namespace HoleOverHttp.WsProvider
 
             return
                 Task.Run(() => (object) _methods.Select(
-                    method => new MethodDefinition
+                    method => new
                     {
                         MethodName = method.Key,
                         Instance = $"{method.Value.Item2}",
@@ -106,14 +106,6 @@ namespace HoleOverHttp.WsProvider
                                     : v.Value) ?? throw new InvalidOperationException())
                             : JsonConvert.DeserializeObject(param.ToString(), v.Value));
                 }).ToArray();
-        }
-
-        internal class MethodDefinition
-        {
-            public string Instance;
-            public string MethodName;
-            public string ReturnType;
-            public IDictionary<string, IDictionary<string, object>> Arguments;
         }
     }
 }
