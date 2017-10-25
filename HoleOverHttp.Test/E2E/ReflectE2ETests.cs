@@ -76,7 +76,8 @@ namespace HoleOverHttp.Test.E2E
                 var callConnectionPool = scope.Resolve<ICallConnectionPool>();
                 var namespaces1 = callConnectionPool.AllNamespaces.ToList();
                 Assert.AreEqual(1, namespaces1.Count);
-                Assert.AreEqual("ns", namespaces1[0]);
+                Assert.AreEqual("ns", namespaces1[0].Item1);
+                Assert.AreEqual(1, namespaces1[0].Item2);
                 tokenSource.Cancel();
 
                 Thread.Sleep(TimeSpan.FromSeconds(1));
