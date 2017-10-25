@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace HoleOverHttp.Core
 {
     public interface ICallConnectionPool
     {
-        IEnumerable<string> AllNamespaces { get; }
+        IEnumerable<Tuple<string, int>> AllNamespaces { get; }
 
         void Register(ICallConnection connection);
 

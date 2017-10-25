@@ -90,31 +90,31 @@ namespace HoleOverHttp.Test.WsProvider
                 var bytes1 = Encoding.UTF8.GetBytes("{p1:0,p2:{\"key\":0}}");
                 var objects1 = ReflectCallProviderConnection.MethodParameterParser(methodInfo, bytes1);
                 Assert.AreEqual(2, objects1.Length);
-                Assert.AreEqual(0, (int)objects1[0]);
-                Assert.AreEqual(1, ((IDictionary<string, int>)objects1[1]).Count);
+                Assert.AreEqual(0, (int) objects1[0]);
+                Assert.AreEqual(1, ((IDictionary<string, int>) objects1[1]).Count);
 
                 var bytes2 = Encoding.UTF8.GetBytes("{p1:0,p2:{\"key\":-1}}");
                 var objects2 = ReflectCallProviderConnection.MethodParameterParser(methodInfo, bytes2);
                 Assert.AreEqual(2, objects2.Length);
-                Assert.AreEqual(0, (int)objects2[0]);
-                Assert.AreEqual(1, ((IDictionary<string, int>)objects2[1]).Count);
+                Assert.AreEqual(0, (int) objects2[0]);
+                Assert.AreEqual(1, ((IDictionary<string, int>) objects2[1]).Count);
 
                 var bytes3 = Encoding.UTF8.GetBytes("{p1:0,p2:{}}");
                 var objects3 = ReflectCallProviderConnection.MethodParameterParser(methodInfo, bytes3);
                 Assert.AreEqual(2, objects3.Length);
-                Assert.AreEqual(0, (int)objects3[0]);
-                Assert.AreEqual(0, ((IDictionary<string, int>)objects3[1]).Count);
+                Assert.AreEqual(0, (int) objects3[0]);
+                Assert.AreEqual(0, ((IDictionary<string, int>) objects3[1]).Count);
 
                 var bytes4 = Encoding.UTF8.GetBytes("{p1:0,p2:{key:0}}");
                 var objects4 = ReflectCallProviderConnection.MethodParameterParser(methodInfo, bytes4);
                 Assert.AreEqual(2, objects4.Length);
-                Assert.AreEqual(0, (int)objects4[0]);
-                Assert.AreEqual(1, ((IDictionary<string, int>)objects4[1]).Count);
+                Assert.AreEqual(0, (int) objects4[0]);
+                Assert.AreEqual(1, ((IDictionary<string, int>) objects4[1]).Count);
 
                 var bytes5 = Encoding.UTF8.GetBytes("{p1:0}");
                 var objects5 = ReflectCallProviderConnection.MethodParameterParser(methodInfo, bytes5);
                 Assert.AreEqual(2, objects5.Length);
-                Assert.AreEqual(0, (int)objects5[0]);
+                Assert.AreEqual(0, (int) objects5[0]);
                 Assert.AreEqual(null, objects5[1]);
             }
         }
@@ -128,7 +128,7 @@ namespace HoleOverHttp.Test.WsProvider
                 var bytes1 = Encoding.UTF8.GetBytes("{p1:\"right\"}");
                 var objects1 = ReflectCallProviderConnection.MethodParameterParser(methodInfo, bytes1);
                 Assert.AreEqual(1, objects1.Length);
-                Assert.AreEqual("right", (string)objects1[0]);
+                Assert.AreEqual("right", (string) objects1[0]);
 
                 var bytes2 = Encoding.UTF8.GetBytes("{p1:null}");
                 var objects2 = ReflectCallProviderConnection.MethodParameterParser(methodInfo, bytes2);
@@ -138,7 +138,7 @@ namespace HoleOverHttp.Test.WsProvider
                 var bytes3 = Encoding.UTF8.GetBytes("{p1:\"\"}");
                 var objects3 = ReflectCallProviderConnection.MethodParameterParser(methodInfo, bytes3);
                 Assert.AreEqual(1, objects3.Length);
-                Assert.AreEqual("", (string)objects3[0]);
+                Assert.AreEqual("", (string) objects3[0]);
 
                 var bytes4 = Encoding.UTF8.GetBytes("{p1:0}");
                 var objects4 = ReflectCallProviderConnection.MethodParameterParser(methodInfo, bytes4);
@@ -151,33 +151,38 @@ namespace HoleOverHttp.Test.WsProvider
                 var bytes1 = Encoding.UTF8.GetBytes("{p1:true,p2:true}");
                 var objects1 = ReflectCallProviderConnection.MethodParameterParser(methodInfo, bytes1);
                 Assert.AreEqual(2, objects1.Length);
-                Assert.AreEqual(true, (bool)objects1[0]);
-                Assert.AreEqual(true, (bool?)objects1[1]);
+                Assert.AreEqual(true, (bool) objects1[0]);
+                Assert.AreEqual(true, (bool?) objects1[1]);
 
                 var bytes2 = Encoding.UTF8.GetBytes("{p1:\"true\",p2:\"true\"}");
                 var objects2 = ReflectCallProviderConnection.MethodParameterParser(methodInfo, bytes2);
                 Assert.AreEqual(2, objects2.Length);
-                Assert.AreEqual(true, (bool)objects2[0]);
-                Assert.AreEqual(true, (bool?)objects2[1]);
+                Assert.AreEqual(true, (bool) objects2[0]);
+                Assert.AreEqual(true, (bool?) objects2[1]);
 
                 var bytes3 = Encoding.UTF8.GetBytes("{p1:\"\"}");
-                Assert.ThrowsException<FormatException>(() => ReflectCallProviderConnection.MethodParameterParser(methodInfo, bytes3));
+                Assert.ThrowsException<FormatException>(() =>
+                    ReflectCallProviderConnection.MethodParameterParser(methodInfo, bytes3));
 
                 var bytes4 = Encoding.UTF8.GetBytes("{p2:null}");
                 var objects4 = ReflectCallProviderConnection.MethodParameterParser(methodInfo, bytes4);
                 Assert.AreEqual(2, objects4.Length);
                 Assert.AreEqual(null, objects4[0]);
-                Assert.AreEqual(null, (bool?)objects4[1]);
+                Assert.AreEqual(null, (bool?) objects4[1]);
             }
 
             // case 3: DateTimeOffset parameter case.
             {
                 var methodInfo = _methods["DateTimeOffsetMethod"];
-                var bytes1 = Encoding.UTF8.GetBytes("{p1:\"2017-10-10T08:47:51.3834082+00:00\",p2:\"2017-10-10T08:47:51.3834082+00:00\"}");
+                var bytes1 =
+                    Encoding.UTF8.GetBytes(
+                        "{p1:\"2017-10-10T08:47:51.3834082+00:00\",p2:\"2017-10-10T08:47:51.3834082+00:00\"}");
                 var objects1 = ReflectCallProviderConnection.MethodParameterParser(methodInfo, bytes1);
                 Assert.AreEqual(2, objects1.Length);
-                Assert.AreEqual(DateTimeOffset.Parse("2017-10-10T08:47:51.3834082+00:00"), (DateTimeOffset)objects1[0]);
-                Assert.AreEqual(DateTimeOffset.Parse("2017-10-10T08:47:51.3834082+00:00"), (DateTimeOffset?)objects1[1]);
+                Assert.AreEqual(DateTimeOffset.Parse("2017-10-10T08:47:51.3834082+00:00"),
+                    (DateTimeOffset) objects1[0]);
+                Assert.AreEqual(DateTimeOffset.Parse("2017-10-10T08:47:51.3834082+00:00"),
+                    (DateTimeOffset?) objects1[1]);
             }
         }
 
@@ -216,20 +221,25 @@ namespace HoleOverHttp.Test.WsProvider
 
             // case 3: mixed parameter case.
             {
-                var result1 = _reflectCallProviderConnection.ProcessCall("MixedParameterMethod", Encoding.UTF8.GetBytes("{p1:0,p2:{\"key\":0}}")).Result;
-                Assert.AreEqual(true, (bool)result1);
+                var result1 = _reflectCallProviderConnection
+                    .ProcessCall("MixedParameterMethod", Encoding.UTF8.GetBytes("{p1:0,p2:{\"key\":0}}")).Result;
+                Assert.AreEqual(true, (bool) result1);
 
-                var result2 = _reflectCallProviderConnection.ProcessCall("MixedParameterMethod", Encoding.UTF8.GetBytes("{p1:0,p2:{\"key\":-1}}")).Result;
-                Assert.AreEqual(false, (bool)result2);
+                var result2 = _reflectCallProviderConnection
+                    .ProcessCall("MixedParameterMethod", Encoding.UTF8.GetBytes("{p1:0,p2:{\"key\":-1}}")).Result;
+                Assert.AreEqual(false, (bool) result2);
 
-                var result3 = _reflectCallProviderConnection.ProcessCall("MixedParameterMethod", Encoding.UTF8.GetBytes("{p1:0,p2:{}}")).Result;
-                Assert.AreEqual(false, (bool)result3);
+                var result3 = _reflectCallProviderConnection
+                    .ProcessCall("MixedParameterMethod", Encoding.UTF8.GetBytes("{p1:0,p2:{}}")).Result;
+                Assert.AreEqual(false, (bool) result3);
 
-                var result4 = _reflectCallProviderConnection.ProcessCall("MixedParameterMethod", Encoding.UTF8.GetBytes("{p1:0,p2:{key:0}}")).Result;
-                Assert.AreEqual(true, (bool)result4);
+                var result4 = _reflectCallProviderConnection
+                    .ProcessCall("MixedParameterMethod", Encoding.UTF8.GetBytes("{p1:0,p2:{key:0}}")).Result;
+                Assert.AreEqual(true, (bool) result4);
 
-                var result5 = _reflectCallProviderConnection.ProcessCall("MixedParameterMethod", Encoding.UTF8.GetBytes("{p1:0}")).Result;
-                Assert.AreEqual(false, (bool)result5);
+                var result5 = _reflectCallProviderConnection
+                    .ProcessCall("MixedParameterMethod", Encoding.UTF8.GetBytes("{p1:0}")).Result;
+                Assert.AreEqual(false, (bool) result5);
             }
 
             // case 4: invalid case.
@@ -249,29 +259,36 @@ namespace HoleOverHttp.Test.WsProvider
         {
             // case 1: string parameter case.
             {
-                var result1 = _reflectCallProviderConnection.ProcessCall("StringMethod", Encoding.UTF8.GetBytes("{p1:\"right\"}")).Result;
-                Assert.AreEqual(true, (bool)result1);
+                var result1 = _reflectCallProviderConnection
+                    .ProcessCall("StringMethod", Encoding.UTF8.GetBytes("{p1:\"right\"}")).Result;
+                Assert.AreEqual(true, (bool) result1);
 
-                var result2 = _reflectCallProviderConnection.ProcessCall("StringMethod", Encoding.UTF8.GetBytes("{}")).Result;
-                Assert.AreEqual(false, (bool)result2);
+                var result2 = _reflectCallProviderConnection.ProcessCall("StringMethod", Encoding.UTF8.GetBytes("{}"))
+                    .Result;
+                Assert.AreEqual(false, (bool) result2);
 
-                var result3 = _reflectCallProviderConnection.ProcessCall("StringMethod", Encoding.UTF8.GetBytes("{p1:null}")).Result;
-                Assert.AreEqual(false, (bool)result3);
+                var result3 = _reflectCallProviderConnection
+                    .ProcessCall("StringMethod", Encoding.UTF8.GetBytes("{p1:null}")).Result;
+                Assert.AreEqual(false, (bool) result3);
 
-                var result4 = _reflectCallProviderConnection.ProcessCall("StringMethod", Encoding.UTF8.GetBytes("{\"p1\":\"right\"}")).Result;
-                Assert.AreEqual(true, (bool)result4);
+                var result4 = _reflectCallProviderConnection
+                    .ProcessCall("StringMethod", Encoding.UTF8.GetBytes("{\"p1\":\"right\"}")).Result;
+                Assert.AreEqual(true, (bool) result4);
             }
 
             // case 2: bool parameter case.
             {
-                var result1 = _reflectCallProviderConnection.ProcessCall("BoolMethod", Encoding.UTF8.GetBytes("{p1:true,p2:true}")).Result;
-                Assert.AreEqual(true, (bool)result1);
+                var result1 = _reflectCallProviderConnection
+                    .ProcessCall("BoolMethod", Encoding.UTF8.GetBytes("{p1:true,p2:true}")).Result;
+                Assert.AreEqual(true, (bool) result1);
 
-                var result2 = _reflectCallProviderConnection.ProcessCall("BoolMethod", Encoding.UTF8.GetBytes("{p1:\"true\",p2:\"true\"}")).Result;
-                Assert.AreEqual(true, (bool)result2);
+                var result2 = _reflectCallProviderConnection
+                    .ProcessCall("BoolMethod", Encoding.UTF8.GetBytes("{p1:\"true\",p2:\"true\"}")).Result;
+                Assert.AreEqual(true, (bool) result2);
 
-                var result3 = _reflectCallProviderConnection.ProcessCall("BoolMethod", Encoding.UTF8.GetBytes("{p2:null}")).Result;
-                Assert.AreEqual(false, (bool)result3);
+                var result3 = _reflectCallProviderConnection
+                    .ProcessCall("BoolMethod", Encoding.UTF8.GetBytes("{p2:null}")).Result;
+                Assert.AreEqual(false, (bool) result3);
             }
 
             // case 3: DateTimeOffset parameter case.
@@ -279,12 +296,21 @@ namespace HoleOverHttp.Test.WsProvider
                 var result1 = _reflectCallProviderConnection.ProcessCall("DateTimeOffsetMethod",
                     Encoding.UTF8.GetBytes(
                         "{p1:\"2017-10-10T08:47:51.3834082+00:00\",p2:\"2017-10-10T08:47:51.3834082+00:00\"}")).Result;
-                Assert.AreEqual(true, (bool)result1);
+                Assert.AreEqual(true, (bool) result1);
 
                 var result2 = _reflectCallProviderConnection.ProcessCall("DateTimeOffsetMethod",
                     Encoding.UTF8.GetBytes(
                         "{p2:\"2017-10-10T08:47:51.3834082+00:00\"}")).Result;
-                Assert.AreEqual(true, (bool)result2);
+                Assert.AreEqual(true, (bool) result2);
+            }
+        }
+
+        [TestMethod]
+        public void TestReflectCallProvider_RegisterService()
+        {
+            // case 1: register same service twice case.
+            {
+                Assert.ThrowsException<Exception>(() => _reflectCallProviderConnection.RegisterService(_target));
             }
         }
     }

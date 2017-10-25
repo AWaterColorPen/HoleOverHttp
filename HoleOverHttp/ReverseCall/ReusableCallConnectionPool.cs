@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using HoleOverHttp.Core;
@@ -59,7 +60,7 @@ namespace HoleOverHttp.ReverseCall
                 : null;
         }
 
-        public IEnumerable<string> AllNamespaces => _pool.Keys;
+        public IEnumerable<Tuple<string, int>> AllNamespaces => _pool.Select(v => new Tuple<string, int>(v.Key, v.Value.Length));
 
         private ICallConnection RoundRobin(IReadOnlyList<ICallConnection> connections)
         {
