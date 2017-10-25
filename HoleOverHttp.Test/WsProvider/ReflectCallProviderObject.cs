@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Threading;
 
 namespace HoleOverHttp.Test.WsProvider
@@ -43,13 +42,11 @@ namespace HoleOverHttp.Test.WsProvider
             return true;
         }
     }
-
-    [DataContract]
+    
     public class DummyClass
     {
-        [DataMember]
         public bool P1;
-        [DataMember]
+
         public bool P2;
     }
 }
