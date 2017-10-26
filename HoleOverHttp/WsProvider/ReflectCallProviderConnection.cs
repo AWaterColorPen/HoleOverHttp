@@ -20,7 +20,7 @@ namespace HoleOverHttp.WsProvider
         {
         }
 
-        public void RegisterService(object service)
+        public override void RegisterService(object service)
         {
             foreach (var method in service.GetType().GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
             {

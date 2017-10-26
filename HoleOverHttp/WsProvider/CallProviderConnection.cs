@@ -134,6 +134,8 @@ namespace HoleOverHttp.WsProvider
             }
         }
 
+        public abstract void RegisterService(object service);
+
         public abstract Task<object> ProcessCall(string method, byte[] bytes);
     }
 }
