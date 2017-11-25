@@ -17,7 +17,9 @@ namespace HoleOverHttp.ReverseCall
         private readonly ConcurrentDictionary<Guid, CallTaskHandle> _callHandles =
             new ConcurrentDictionary<Guid, CallTaskHandle>();
 
-        private readonly SemaphoreSlim _sem = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _sem = new SemaphoreSlim(10, 10);
+
+        private readonly object _locksend = new object();
 
         private readonly WebSocket _socket;
 
@@ -47,9 +49,12 @@ namespace HoleOverHttp.ReverseCall
                 writer.Write(callid.ToByteArray());
                 writer.Write(method);
                 writer.Write(param);
-                
-                await _socket.SendAsync(new ArraySegment<byte>(ms.ToArray()), WebSocketMessageType.Binary, true,
-                    CancellationToken.None);
+
+                lock (_locksend)
+                {
+                    _socket.SendAsync(new ArraySegment<byte>(ms.ToArray()), WebSocketMessageType.Binary, true,
+                        CancellationToken.None).Wait();
+                }
 
                 await Task.WhenAny(handle.Source.Task, Task.Delay(TimeOutSetting));
                 if (handle.Source.Task.IsCompleted)

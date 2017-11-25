@@ -49,7 +49,7 @@ namespace HoleOverHttp.WsProvider
                 {
                     var socket = await ReconnectAsync();
                     var buffer = new byte[4096];
-                    var lockObject = new object();
+                    var locksend = new object();
                     while (socket.State == WebSocketState.Open)
                     {
                         using (var ms = new MemoryStream())
@@ -118,7 +118,7 @@ namespace HoleOverHttp.WsProvider
                                     buf.Write(id, 0, id.Length);
                                     buf.Write(rt, 0, rt.Length);
 
-                                    lock (lockObject)
+                                    lock (locksend)
                                     {
                                         socket.SendAsync(new ArraySegment<byte>(buf.ToArray()),
                                             WebSocketMessageType.Binary, true, token).Wait(token);                                        
