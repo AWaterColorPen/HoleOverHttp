@@ -24,6 +24,9 @@ namespace HoleOverHttp.Test.E2E
         [ClassInitialize]
         public static void ClassInitialize(TestContext testContext)
         {
+            ThreadPool.SetMaxThreads(1024, 1024);
+            ThreadPool.SetMinThreads(1024, 1024);
+
             var builder = new ContainerBuilder();
             builder.RegisterType<ReusableCallConnectionPool>().As<ICallConnectionPool>().SingleInstance();
             builder.RegisterType<FakeHttpService>().AsSelf().SingleInstance();
@@ -145,32 +148,19 @@ namespace HoleOverHttp.Test.E2E
 
                 var callConnectionPool = scope.Resolve<ICallConnectionPool>();
 
-                Parallel.ForEach(Enumerable.Range(0, 10), new ParallelOptions { MaxDegreeOfParallelism = 12 }, i =>
-                  {
-                      var result = callConnectionPool.CallAsync("ns", "NullableParameterMethod",
-                          Encoding.UTF8.GetBytes("{p1:0,p2:0}")).Result;
-
-                      var jobject = JsonConvert.DeserializeObject<JObject>(Encoding.UTF8.GetString(result));
-
-                      Assert.AreEqual(2, jobject.Count);
-                      Assert.IsTrue((bool)jobject["result"]);
-                      Assert.IsTrue((int)jobject["latency"] >= 0);
-                  });
-
                 var stopwatch = Stopwatch.StartNew();
                 Parallel.ForEach(Enumerable.Range(0, 10), new ParallelOptions { MaxDegreeOfParallelism = 12 }, i =>
                 {
                     var result = callConnectionPool.CallAsync("ns", "TimeOutMethod",
                         Encoding.UTF8.GetBytes($"{{sleepTime:1000,uid:{i}}}")).Result;
                     var jobject = JsonConvert.DeserializeObject<JObject>(Encoding.UTF8.GetString(result));
-
-                    Debug.WriteLine(jobject["latency"]);
+                    
                     Assert.AreEqual(2, jobject.Count);
                     Assert.AreEqual(i, (int) jobject["result"]);
                     Assert.IsTrue((int) jobject["latency"] >= 1000);
                 });
                 stopwatch.Stop();
-                Assert.IsTrue(stopwatch.ElapsedMilliseconds < 9000);
+                Assert.IsTrue(stopwatch.ElapsedMilliseconds < 3000);
 
                 tokenSource.Cancel();
             }
