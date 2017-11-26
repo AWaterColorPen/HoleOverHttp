@@ -148,20 +148,38 @@ namespace HoleOverHttp.Test.E2E
 
                 var callConnectionPool = scope.Resolve<ICallConnectionPool>();
 
-                var stopwatch = Stopwatch.StartNew();
-                Parallel.ForEach(Enumerable.Range(0, 10), new ParallelOptions { MaxDegreeOfParallelism = 12 }, i =>
+                // case 1:
                 {
-                    var result = callConnectionPool.CallAsync("ns", "TimeOutMethod",
-                        Encoding.UTF8.GetBytes($"{{sleepTime:1000,uid:{i}}}")).Result;
+                    Parallel.ForEach(Enumerable.Range(0, 10), new ParallelOptions { MaxDegreeOfParallelism = 12 }, i =>
+                    {
+                        var result = callConnectionPool.CallAsync("ns", "NullableParameterMethod",
+                            Encoding.UTF8.GetBytes("{p1:0,p2:0}")).Result;
 
-                    var jobject = JsonConvert.DeserializeObject<JObject>(Encoding.UTF8.GetString(result));
-                    
-                    Assert.AreEqual(2, jobject.Count);
-                    Assert.AreEqual(i, (int) jobject["result"]);
-                    Assert.IsTrue((int) jobject["latency"] >= 1000);
-                });
-                stopwatch.Stop();
-                Assert.IsTrue(stopwatch.ElapsedMilliseconds < 3000);
+                        var jobject = JsonConvert.DeserializeObject<JObject>(Encoding.UTF8.GetString(result));
+
+                        Assert.AreEqual(2, jobject.Count);
+                        Assert.IsTrue((bool)jobject["result"]);
+                        Assert.IsTrue((int)jobject["latency"] >= 0);
+                    });
+                }
+
+                // case 2:
+                {
+                    var stopwatch = Stopwatch.StartNew();
+                    Parallel.ForEach(Enumerable.Range(0, 10), new ParallelOptions { MaxDegreeOfParallelism = 12 }, i =>
+                    {
+                        var result = callConnectionPool.CallAsync("ns", "TimeOutMethod",
+                            Encoding.UTF8.GetBytes($"{{sleepTime:1000,uid:{i}}}")).Result;
+
+                        var jobject = JsonConvert.DeserializeObject<JObject>(Encoding.UTF8.GetString(result));
+
+                        Assert.AreEqual(2, jobject.Count);
+                        Assert.AreEqual(i, (int)jobject["result"]);
+                        Assert.IsTrue((int)jobject["latency"] >= 1000);
+                    });
+                    stopwatch.Stop();
+                    Assert.IsTrue(stopwatch.ElapsedMilliseconds < 3000);
+                }
 
                 tokenSource.Cancel();
             }
