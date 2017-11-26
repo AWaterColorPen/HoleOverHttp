@@ -49,6 +49,7 @@ namespace HoleOverHttp.WsProvider
                 {
                     var socket = await ReconnectAsync();
                     var buffer = new byte[4096];
+                    var locksend = new object();
                     while (socket.State == WebSocketState.Open)
                     {
                         using (var ms = new MemoryStream())
@@ -82,7 +83,7 @@ namespace HoleOverHttp.WsProvider
                                 var method = br.ReadString();
                                 var param = br.ReadBytes((int)ms.Length);
 
-                                await Task.Run(async () =>
+                                var unused = Task.Run(async () =>
                                 {
                                     byte[] rt;
                                     var stopwatch = Stopwatch.StartNew();
@@ -117,8 +118,12 @@ namespace HoleOverHttp.WsProvider
                                     buf.Write(id, 0, id.Length);
                                     buf.Write(rt, 0, rt.Length);
 
-                                    await socket.SendAsync(new ArraySegment<byte>(buf.ToArray()),
-                                        WebSocketMessageType.Binary, true, token);
+                                    lock (locksend)
+                                    {
+                                        socket.SendAsync(new ArraySegment<byte>(buf.ToArray()),
+                                            WebSocketMessageType.Binary, true, token).Wait(token);                                        
+                                    }
+
                                 }, token);
 
                                 break;

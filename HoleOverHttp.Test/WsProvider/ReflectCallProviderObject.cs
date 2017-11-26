@@ -36,10 +36,10 @@ namespace HoleOverHttp.Test.WsProvider
             return p1 < DateTimeOffset.UtcNow && p2 < DateTimeOffset.Now;
         }
 
-        public bool TimeOutMethod(int sleepTime)
+        public int TimeOutMethod(int sleepTime, int uid)
         {
             Thread.Sleep(sleepTime);
-            return true;
+            return uid;
         }
     }
     
