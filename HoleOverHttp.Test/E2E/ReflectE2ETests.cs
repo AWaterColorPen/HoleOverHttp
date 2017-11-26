@@ -159,7 +159,7 @@ namespace HoleOverHttp.Test.E2E
 
                         Assert.AreEqual(2, jobject.Count);
                         Assert.IsTrue((bool) jobject["result"]);
-                        Assert.IsTrue((int)j object["latency"] >= 0);
+                        Assert.IsTrue((int) jobject["latency"] >= 0);
                     });
                 }
 
