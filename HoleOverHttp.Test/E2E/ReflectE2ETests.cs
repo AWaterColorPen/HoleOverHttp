@@ -158,8 +158,8 @@ namespace HoleOverHttp.Test.E2E
                         var jobject = JsonConvert.DeserializeObject<JObject>(Encoding.UTF8.GetString(result));
 
                         Assert.AreEqual(2, jobject.Count);
-                        Assert.IsTrue((bool)jobject["result"]);
-                        Assert.IsTrue((int)jobject["latency"] >= 0);
+                        Assert.IsTrue((bool) jobject["result"]);
+                        Assert.IsTrue((int)j object["latency"] >= 0);
                     });
                 }
 
