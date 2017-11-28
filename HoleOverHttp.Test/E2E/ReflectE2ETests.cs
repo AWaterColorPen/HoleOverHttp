@@ -150,7 +150,7 @@ namespace HoleOverHttp.Test.E2E
 
                 // case 1:
                 {
-                    Parallel.ForEach(Enumerable.Range(0, 10), new ParallelOptions { MaxDegreeOfParallelism = 12 }, i =>
+                    Parallel.ForEach(Enumerable.Range(0, 10), i =>
                     {
                         var result = callConnectionPool.CallAsync("ns", "NullableParameterMethod",
                             Encoding.UTF8.GetBytes("{p1:0,p2:0}")).Result;
@@ -166,7 +166,7 @@ namespace HoleOverHttp.Test.E2E
                 // case 2:
                 {
                     var stopwatch = Stopwatch.StartNew();
-                    Parallel.ForEach(Enumerable.Range(0, 10), new ParallelOptions { MaxDegreeOfParallelism = 12 }, i =>
+                    Parallel.ForEach(Enumerable.Range(0, 10), i =>
                     {
                         var result = callConnectionPool.CallAsync("ns", "TimeOutMethod",
                             Encoding.UTF8.GetBytes($"{{sleepTime:1000,uid:{i}}}")).Result;
@@ -175,7 +175,7 @@ namespace HoleOverHttp.Test.E2E
 
                         Assert.AreEqual(2, jobject.Count);
                         Assert.AreEqual(i, (int)jobject["result"]);
-                        Assert.IsTrue((int)jobject["latency"] >= 1000);
+                        Assert.IsTrue((int) jobject["latency"] >= 1000);
                     });
                     stopwatch.Stop();
                     Assert.IsTrue(stopwatch.ElapsedMilliseconds < 3000);
