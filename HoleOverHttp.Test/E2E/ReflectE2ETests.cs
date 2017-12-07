@@ -24,8 +24,7 @@ namespace HoleOverHttp.Test.E2E
         [ClassInitialize]
         public static void ClassInitialize(TestContext testContext)
         {
-            ThreadPool.SetMaxThreads(1024, 1024);
-            ThreadPool.SetMinThreads(1024, 1024);
+            ThreadPool.SetMinThreads(1000, 1000);
 
             var builder = new ContainerBuilder();
             builder.RegisterType<ReusableCallConnectionPool>().As<ICallConnectionPool>().SingleInstance();
@@ -258,6 +257,50 @@ namespace HoleOverHttp.Test.E2E
                 Assert.AreEqual(2, mixedParameterMethod["Arguments"]["p3"]["Sample"].Count());
                 Assert.AreEqual(false, (bool) mixedParameterMethod["Arguments"]["p3"]["Sample"]["P1"]);
                 Assert.AreEqual(false, (bool )mixedParameterMethod["Arguments"]["p3"]["Sample"]["P2"]);
+                tokenSource.Cancel();
+            }
+        }
+
+        [TestMethod]
+        public void TestReflectE2E_EnumSerialize()
+        {
+            var tokenSource = new CancellationTokenSource();
+            using (var scope = _container.BeginLifetimeScope())
+            {
+                var callProvider =
+                    scope.Resolve<ReflectCallProviderConnection>(
+                        new NamedParameter("host", "localhost:23333"),
+                        new NamedParameter("namespace", "ns"));
+
+                callProvider.Secure = false;
+                callProvider.RegisterService(new ReflectCallProviderObject());
+                Task.Run(async () =>
+                {
+                    await callProvider.ServeAsync(tokenSource.Token);
+                }, CancellationToken.None);
+
+                Thread.Sleep(TimeSpan.FromSeconds(1));
+
+                var callConnectionPool = scope.Resolve<ICallConnectionPool>();
+
+                // case 1: enum1
+                {
+                    var result = callConnectionPool.CallAsync("ns", "Enum1Method",
+                        Encoding.UTF8.GetBytes("{t:1}")).Result;
+                    var jobject = JsonConvert.DeserializeObject<JObject>(Encoding.UTF8.GetString(result));
+                    Assert.AreEqual(2, jobject.Count);
+                    Assert.AreEqual(DummyEnum1.B, Enum.Parse<DummyEnum1>(jobject["result"].Value<string>()));
+                }
+
+                // case 2: enum2
+                {
+                    var result = callConnectionPool.CallAsync("ns", "Enum2Method",
+                        Encoding.UTF8.GetBytes("{t:3}")).Result;
+                    var jobject = JsonConvert.DeserializeObject<JObject>(Encoding.UTF8.GetString(result));
+                    Assert.AreEqual(2, jobject.Count);
+                    Assert.AreEqual(DummyEnum2.A | DummyEnum2.B, Enum.Parse<DummyEnum2>(jobject["result"].Value<string>()));
+                }
+
                 tokenSource.Cancel();
             }
         }

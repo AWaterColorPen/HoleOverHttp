@@ -99,12 +99,14 @@ namespace HoleOverHttp.WsProvider
                     var param = parameterInput[v.Key];
                     return param == null
                         ? null
-                        : (v.Value.IsSerializable
-                            ? Convert.ChangeType(param,
-                                (v.Value.IsGenericType && v.Value.GetGenericTypeDefinition() == typeof(Nullable<>)
-                                    ? Nullable.GetUnderlyingType(v.Value)
-                                    : v.Value) ?? throw new InvalidOperationException())
-                            : JsonConvert.DeserializeObject(param.ToString(), v.Value));
+                        : v.Value.IsEnum
+                            ? Enum.Parse(v.Value, param.ToString())
+                            : (v.Value.IsSerializable
+                                ? Convert.ChangeType(param,
+                                    (v.Value.IsGenericType && v.Value.GetGenericTypeDefinition() == typeof(Nullable<>)
+                                        ? Nullable.GetUnderlyingType(v.Value)
+                                        : v.Value) ?? throw new InvalidOperationException())
+                                : JsonConvert.DeserializeObject(param.ToString(), v.Value));
                 }).ToArray();
         }
     }
