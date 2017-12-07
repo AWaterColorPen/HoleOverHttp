@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.WebSockets;
@@ -7,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using HoleOverHttp.Core;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Serilog;
 
 namespace HoleOverHttp.WsProvider
@@ -97,9 +99,10 @@ namespace HoleOverHttp.WsProvider
                                                 {
                                                     result = resultObject,
                                                     latency = stopwatch.ElapsedMilliseconds
-                                                }, Formatting.None, new JsonSerializerSettings
+                                                }, new JsonSerializerSettings
                                                 {
-                                                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                                                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                                                    Converters = new List<JsonConverter> { new StringEnumConverter() }
                                                 }
                                             )
                                         );

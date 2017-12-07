@@ -194,6 +194,40 @@ namespace HoleOverHttp.Test.WsProvider
         }
 
         [TestMethod]
+        public void TestReflectCallProvider_MethodParameterParser_GenericMethod()
+        {
+            // case 1: enum1 parameter case.
+            {
+                var methodInfo = _methods["Method"];
+                var method = methodInfo.MakeGenericMethod(typeof(DummyEnum1));
+                var bytes1 = Encoding.UTF8.GetBytes("{t:0}");
+                var objects1 = ReflectCallProviderConnection.MethodParameterParser(method, bytes1);
+                Assert.AreEqual(1, objects1.Length);
+                Assert.AreEqual(DummyEnum1.A, (DummyEnum1) objects1[0]);
+            }
+
+            // case 2: enum1 parameter case.
+            {
+                var methodInfo = _methods["Method"];
+                var method = methodInfo.MakeGenericMethod(typeof(DummyEnum1));
+                var bytes1 = Encoding.UTF8.GetBytes("{t:\"A\"}");
+                var objects1 = ReflectCallProviderConnection.MethodParameterParser(method, bytes1);
+                Assert.AreEqual(1, objects1.Length);
+                Assert.AreEqual(DummyEnum1.A, (DummyEnum1) objects1[0]);
+            }
+
+            // case 3: enum2 parameter case.
+            {
+                var methodInfo = _methods["Method"];
+                var method = methodInfo.MakeGenericMethod(typeof(DummyEnum2));
+                var bytes1 = Encoding.UTF8.GetBytes("{t:3}");
+                var objects1 = ReflectCallProviderConnection.MethodParameterParser(method, bytes1);
+                Assert.AreEqual(1, objects1.Length);
+                Assert.AreEqual(DummyEnum2.A | DummyEnum2.B, (DummyEnum2) objects1[0]);
+            }
+        }
+
+        [TestMethod]
         public void TestReflectCallProvider_ProcessCall_General()
         {
             // case 1: no parameter case.

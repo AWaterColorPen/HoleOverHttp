@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Threading;
 
 namespace HoleOverHttp.Test.WsProvider
@@ -31,6 +32,21 @@ namespace HoleOverHttp.Test.WsProvider
             return p1 && p2 == true;
         }
 
+        public T Method<T>(T t)
+        {
+            return t;
+        }
+
+        public DummyEnum1 Enum1Method(DummyEnum1 t)
+        {
+            return Method(t);
+        }
+
+        public DummyEnum2 Enum2Method(DummyEnum2 t)
+        {
+            return Method(t);
+        }
+
         public bool DateTimeOffsetMethod(DateTimeOffset p1, DateTimeOffset? p2)
         {
             return p1 < DateTimeOffset.UtcNow && p2 < DateTimeOffset.Now;
@@ -48,5 +64,19 @@ namespace HoleOverHttp.Test.WsProvider
         public bool P1;
 
         public bool P2;
+    }
+
+    [DataContract]
+    public enum DummyEnum1
+    {
+        [EnumMember] A,
+        [EnumMember] B
+    }
+
+    [Flags]
+    public enum DummyEnum2
+    {
+        [EnumMember] A = 1,
+        [EnumMember] B = 2
     }
 }
