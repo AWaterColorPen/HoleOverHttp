@@ -52,7 +52,7 @@ namespace HoleOverHttp.WsProvider
             return Task.Run(() => methodInfo.Invoke(_methods[method].Item2, paramObjects));
         }
 
-        public Task<object> ProvideAvailableMethods()
+        private Task<object> ProvideAvailableMethods()
         {
             IDictionary<string, object> BuildParameterTypeDescription(Type type)
             {

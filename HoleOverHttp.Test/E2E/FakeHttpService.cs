@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,7 +20,7 @@ namespace HoleOverHttp.Test.E2E
             _callConnectionPool = callConnectionPool;
         }
 
-        public void Start(string[] prefixes)
+        public void Start(IEnumerable<string> prefixes)
         {
             var settings = new WebListenerSettings();
             foreach (var prefix in prefixes)
@@ -72,9 +73,7 @@ namespace HoleOverHttp.Test.E2E
                 }
             });
         }
-
-
-
+        
         public void Dispose()
         {
             _cancellationTokenSource?.Dispose();

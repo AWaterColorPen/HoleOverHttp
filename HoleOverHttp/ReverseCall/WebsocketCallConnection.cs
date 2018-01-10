@@ -23,12 +23,7 @@ namespace HoleOverHttp.ReverseCall
 
         private readonly WebSocket _socket;
 
-        public WebsocketCallConnection(string ns, WebSocket socket)
-            : this(ns, socket, 10)
-        {
-        }
-
-        public WebsocketCallConnection(string ns, WebSocket socket, int maxDegreeOfParallelism)
+        public WebsocketCallConnection(string ns, WebSocket socket, int maxDegreeOfParallelism = 10)
         {
             Namespace = ns;
             _socket = socket;
@@ -46,6 +41,7 @@ namespace HoleOverHttp.ReverseCall
             await _sem.WaitAsync();
             var callid = Guid.NewGuid();
             var handle = _callHandles.GetOrAdd(callid, new CallTaskHandle());
+            Log.Verbose($"Call id:{callid} method:{method}");
 
             try
             {
@@ -148,6 +144,7 @@ namespace HoleOverHttp.ReverseCall
             var br = new BinaryReader(message);
 
             var callid = new Guid(br.ReadBytes(SizeOfGuid));
+            Log.Verbose($"Handle message id:{callid}");
 
             if (_callHandles.TryGetValue(callid, out var handle))
             {
