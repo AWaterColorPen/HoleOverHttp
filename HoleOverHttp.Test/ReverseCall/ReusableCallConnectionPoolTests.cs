@@ -98,6 +98,11 @@ namespace HoleOverHttp.Test.ReverseCall
             {
                 throw new NotImplementedException();
             }
+
+            public void WorkUntilDisconnect(ICallConnectionPool callConnectionPool)
+            {
+                throw new NotImplementedException();
+            }
         }
     }
 }
