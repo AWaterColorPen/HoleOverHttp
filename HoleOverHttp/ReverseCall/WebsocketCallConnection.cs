@@ -76,6 +76,29 @@ namespace HoleOverHttp.ReverseCall
             }
         }
 
+        public void WorkUntilDisconnect(ICallConnectionPool callConnectionPool)
+        {
+            callConnectionPool.Register(this);
+
+            try
+            {
+                WorkUntilDisconnect().Wait();
+            }
+            catch (Exception e)
+            {
+                _socket.CloseOutputAsync(WebSocketCloseStatus.InternalServerError, e.ToString(),
+                    CancellationToken.None).Wait();
+                _socket.CloseAsync(WebSocketCloseStatus.InternalServerError, e.ToString(),
+                    CancellationToken.None).Wait();
+                _socket.Abort();
+                _socket.Dispose();
+            }
+            finally
+            {
+                callConnectionPool.UnRegister(this);
+            }
+        }
+
         public void Dispose()
         {
             _sem?.Dispose();
@@ -89,8 +112,8 @@ namespace HoleOverHttp.ReverseCall
                 _sem.Release();
             }
         }
-        
-        public async Task WorkUntilDisconnect()
+
+        private async Task WorkUntilDisconnect()
         {
             var buffer = new byte[4096];
             while (IsAlive)

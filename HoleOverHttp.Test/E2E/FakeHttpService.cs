@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using HoleOverHttp.Core;
@@ -47,25 +46,7 @@ namespace HoleOverHttp.Test.E2E
                                         TimeOutSetting = TimeSpan.FromSeconds(5)
                                     })
                                 {
-                                    _callConnectionPool.Register(connection);
-
-                                    try
-                                    {
-                                        connection.WorkUntilDisconnect().Wait();
-                                    }
-                                    catch (Exception e)
-                                    {
-                                        socket.CloseOutputAsync(WebSocketCloseStatus.InternalServerError, e.ToString(),
-                                            CancellationToken.None).Wait();
-                                        socket.CloseAsync(WebSocketCloseStatus.InternalServerError, e.ToString(),
-                                            CancellationToken.None).Wait();
-                                        socket.Abort();
-                                        socket.Dispose();
-                                    }
-                                    finally
-                                    {
-                                        _callConnectionPool.UnRegister(connection);
-                                    }
+                                    connection.WorkUntilDisconnect(_callConnectionPool);
                                 }
                             });
                         }

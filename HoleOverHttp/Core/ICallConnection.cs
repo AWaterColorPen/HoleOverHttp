@@ -12,5 +12,7 @@ namespace HoleOverHttp.Core
         TimeSpan TimeOutSetting { get; set; }
 
         Task<byte[]> CallAsync(string method, byte[] param);
+
+        void WorkUntilDisconnect(ICallConnectionPool callConnectionPool);
     }
 }
