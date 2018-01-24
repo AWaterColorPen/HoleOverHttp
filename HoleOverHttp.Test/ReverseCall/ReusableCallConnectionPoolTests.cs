@@ -103,6 +103,10 @@ namespace HoleOverHttp.Test.ReverseCall
             {
                 throw new NotImplementedException();
             }
+
+            public void Dispose()
+            {
+            }
         }
     }
 }
