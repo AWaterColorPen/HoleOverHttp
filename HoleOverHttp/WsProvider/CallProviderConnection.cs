@@ -84,8 +84,8 @@ namespace HoleOverHttp.WsProvider
                                 var id = br.ReadBytes(SizeOfGuid);
                                 var method = br.ReadString();
                                 var param = br.ReadBytes((int) ms.Length);
-
-                                Log.Verbose($"Receive and start task. id:{Encoding.UTF8.GetString(id)} method:{method}");
+                                
+                                Log.Verbose($"Receive and start task. id:{new Guid(id)} method:{method}");
                                 var unused = Task.Run(async () =>
                                 {
                                     byte[] rt;
