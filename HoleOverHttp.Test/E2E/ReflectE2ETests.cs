@@ -28,6 +28,8 @@ namespace HoleOverHttp.Test.E2E
 
             var builder = new ContainerBuilder();
             builder.RegisterType<ReusableCallConnectionPool>().As<ICallConnectionPool>().SingleInstance();
+            builder.RegisterType<WebListenerCallRegistry>().AsSelf()
+                .WithParameter("prefixes", new[] {"http://localhost:23333/ws/"});
             builder.RegisterType<FakeHttpService>().AsSelf().SingleInstance();
 
             builder.RegisterType<DummyAuthorizationProvider>().As<IAuthorizationProvider>().SingleInstance();
@@ -37,7 +39,7 @@ namespace HoleOverHttp.Test.E2E
             using (var scope = _container.BeginLifetimeScope())
             {
                 var fakeHttpService = scope.Resolve<FakeHttpService>();
-                fakeHttpService.Start(new[] { "http://localhost:23333/ws/" });
+                fakeHttpService.Start();
             }
 
             Thread.Sleep(TimeSpan.FromSeconds(1));

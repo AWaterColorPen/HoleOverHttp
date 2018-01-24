@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using HoleOverHttp.Core;
 
 namespace HoleOverHttp.ReverseCall
@@ -25,6 +26,17 @@ namespace HoleOverHttp.ReverseCall
         public static async Task<byte[]> ProvideAvailableMethodsAsync(this ICallConnectionPool connectionPool, string ns)
         {
             return await CallAsync(connectionPool, ns, string.Empty, new byte[0]);
+        }
+
+        public static Task Activated(this ICallConnectionPool connectionPool, Func<ICallConnection> connectionFactory)
+        {
+            return Task.Run(() =>
+            {
+                using (var connection = connectionFactory())
+                {
+                    connection.WorkUntilDisconnect(connectionPool);
+                }
+            });
         }
     }
 }

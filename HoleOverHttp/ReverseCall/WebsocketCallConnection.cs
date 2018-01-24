@@ -10,7 +10,7 @@ using Serilog;
 
 namespace HoleOverHttp.ReverseCall
 {
-    public class WebsocketCallConnection : ICallConnection, IDisposable
+    public class WebsocketCallConnection : ICallConnection
     {
         private static readonly int SizeOfGuid = Guid.Empty.ToByteArray().Length;
 

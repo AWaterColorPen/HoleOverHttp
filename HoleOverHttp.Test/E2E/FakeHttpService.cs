@@ -1,57 +1,25 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using HoleOverHttp.Core;
-using HoleOverHttp.ReverseCall;
-using Microsoft.Net.Http.Server;
 
 namespace HoleOverHttp.Test.E2E
 {
     internal class FakeHttpService : IDisposable
     {
-        private readonly ICallConnectionPool _callConnectionPool;
+        private readonly WebListenerCallRegistry _webListenerCallRegistry;
 
         private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
-        public FakeHttpService(ICallConnectionPool callConnectionPool)
+        public FakeHttpService(WebListenerCallRegistry webListenerCallRegistry)
         {
-            _callConnectionPool = callConnectionPool;
+            _webListenerCallRegistry = webListenerCallRegistry;
         }
 
-        public void Start(IEnumerable<string> prefixes)
+        public void Start()
         {
-            var settings = new WebListenerSettings();
-            foreach (var prefix in prefixes)
-            {
-                settings.UrlPrefixes.Add(prefix);
-            }
-
             Task.Run(() =>
             {
-                using (var listener = new WebListener(settings))
-                {
-                    listener.Start();
-                    while (!_cancellationTokenSource.Token.IsCancellationRequested)
-                    {
-                        var context = listener.AcceptAsync().Result;
-                        if (context.IsWebSocketRequest)
-                        {
-                            Task.Run(() =>
-                            {
-                                var socket = context.AcceptWebSocketAsync().Result;
-                                using (var connection =
-                                    new WebsocketCallConnection("ns", socket)
-                                    {
-                                        TimeOutSetting = TimeSpan.FromSeconds(5)
-                                    })
-                                {
-                                    connection.WorkUntilDisconnect(_callConnectionPool);
-                                }
-                            });
-                        }
-                    }
-                }
+                _webListenerCallRegistry.RegisterRemoteSocket(_cancellationTokenSource.Token);
             });
         }
         

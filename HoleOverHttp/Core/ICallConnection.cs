@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace HoleOverHttp.Core
 {
-    public interface ICallConnection
+    public interface ICallConnection: IDisposable
     {
         string Namespace { get; }
 
