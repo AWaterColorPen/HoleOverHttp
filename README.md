@@ -5,7 +5,7 @@
 Library to help providing server api and connection to client. 
 Implementation in C#, targeting .NET Standard 2.0+ (Frameworks 4.5+, Core 2.0+). 
 
-The library can help server acoss network security group and firewall to provider api and connection to client.
+The library can help server acoss network security groups and firewall to provider api and connection to client.
 
 ## Usage
 
