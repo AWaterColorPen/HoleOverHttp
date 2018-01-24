@@ -6,7 +6,7 @@
     <PackageVersion>1.0.2</PackageVersion>
     <Authors>Hellis</Authors>
     <Owners>hellis</Owners>
-    <ProjectUrl>https://github.com/AWaterColorPen/HoleOverHttp</ProjectUrl>
+    <PackageProjectUrl>https://github.com/AWaterColorPen/HoleOverHttp</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Description>Library to help providing server api and connection to client. Implementation in C#, targeting .NET Standard 2.0+ (Frameworks 4.5+, Core 2.0+). The library can help server acoss network security group and firewall to provider api and connection to client.</Description>
     <PackageReleaseNotes>Release a stable version.</PackageReleaseNotes>
