@@ -128,7 +128,7 @@ namespace HoleOverHttp.WsProvider
                                             WebSocketMessageType.Binary, true, token).Wait(token);                                        
                                     }
 
-                                    Log.Verbose($"Send and finish task. id:{Encoding.UTF8.GetString(id)} method:{method}");
+                                    Log.Verbose($"Send and finish task. id:{new Guid(id)} method:{method}");
                                 }, token);
 
                                 break;
