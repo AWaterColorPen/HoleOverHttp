@@ -13,16 +13,17 @@ using Serilog;
 
 namespace HoleOverHttp.WsProvider
 {
-    public abstract class CallProviderConnection
+    public class WebSocketProviderConnection : IProviderConnection
     {
         private static readonly int SizeOfGuid = Guid.Empty.ToByteArray().Length;
 
         private readonly string _host;
+
         private readonly string _namespace;
 
         private readonly IAuthorizationProvider _tokenProvider;
 
-        protected CallProviderConnection(string host, string @namespace, IAuthorizationProvider tokenProvider)
+        public WebSocketProviderConnection(string host, string @namespace, IAuthorizationProvider tokenProvider)
         {
             _namespace = @namespace;
             _tokenProvider = tokenProvider;
@@ -31,11 +32,13 @@ namespace HoleOverHttp.WsProvider
 
         public string UriPattern { get; set; } = "{0}://{1}/ws/register?ns={2}";
 
+        public Func<object, Task<object>> CallFunc { get; set; }
+
         public bool Secure { get; set; } = true;
 
         private Uri Uri => new Uri(string.Format(UriPattern, Secure ? "wss" : "ws", _host, _namespace));
 
-        public async Task<WebSocket> ReconnectAsync()
+        private async Task<WebSocket> ReconnectAsync()
         {
             var socket = new ClientWebSocket();
             socket.Options.SetRequestHeader(_tokenProvider.Key, _tokenProvider.Value);
@@ -92,7 +95,7 @@ namespace HoleOverHttp.WsProvider
                                     var stopwatch = Stopwatch.StartNew();
                                     try
                                     {
-                                        var resultObject = await ProcessCall(method, param);
+                                        var resultObject = await CallFunc(new {method, param});
                                         stopwatch.Stop();
                                         rt = Encoding.UTF8.GetBytes(
                                             JsonConvert.SerializeObject(
@@ -143,9 +146,5 @@ namespace HoleOverHttp.WsProvider
                 }
             }
         }
-
-        public abstract void RegisterService(object service);
-
-        public abstract Task<object> ProcessCall(string method, byte[] bytes);
     }
 }
