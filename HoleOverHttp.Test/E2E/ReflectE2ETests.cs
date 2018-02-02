@@ -33,13 +33,22 @@ namespace HoleOverHttp.Test.E2E
             builder.RegisterType<FakeHttpService>().AsSelf().SingleInstance();
 
             builder.RegisterType<DummyAuthorizationProvider>().As<IAuthorizationProvider>().SingleInstance();
-            builder.RegisterType<ReflectCallProviderConnection>().AsSelf();
+            builder.RegisterType<ReflectCallProvider>().AsSelf().SingleInstance();
+            builder.RegisterType<WebSocketProviderConnection>().As<IProviderConnection>()
+                .WithParameter("host", "localhost:23333")
+                .WithParameter("namespace", "ns");
             _container = builder.Build();
 
             using (var scope = _container.BeginLifetimeScope())
             {
                 var fakeHttpService = scope.Resolve<FakeHttpService>();
                 fakeHttpService.Start();
+                
+                var providerConnection = scope.Resolve<IProviderConnection>();
+                providerConnection.Secure = false;
+                var callProvider = scope.Resolve<ReflectCallProvider>();
+                callProvider.RegisterConnection(providerConnection);
+                callProvider.RegisterService(new ReflectCallProviderObject());
             }
 
             Thread.Sleep(TimeSpan.FromSeconds(1));
@@ -66,13 +75,7 @@ namespace HoleOverHttp.Test.E2E
             var tokenSource = new CancellationTokenSource();
             using (var scope = _container.BeginLifetimeScope())
             {
-                var callProvider =
-                    scope.Resolve<ReflectCallProviderConnection>(
-                        new NamedParameter("host", "localhost:23333"),
-                        new NamedParameter("namespace", "ns"));
-
-                callProvider.Secure = false;
-                callProvider.RegisterService(new ReflectCallProviderObject());
+                var callProvider = scope.Resolve<ReflectCallProvider>();
                 Task.Run(async () =>
                 {
                     await callProvider.ServeAsync(tokenSource.Token);
@@ -101,13 +104,7 @@ namespace HoleOverHttp.Test.E2E
             var tokenSource = new CancellationTokenSource();
             using (var scope = _container.BeginLifetimeScope())
             {
-                var callProvider =
-                    scope.Resolve<ReflectCallProviderConnection>(
-                        new NamedParameter("host", "localhost:23333"),
-                        new NamedParameter("namespace", "ns"));
-
-                callProvider.Secure = false;
-                callProvider.RegisterService(new ReflectCallProviderObject());
+                var callProvider = scope.Resolve<ReflectCallProvider>();
                 Task.Run(async () =>
                 {
                     await callProvider.ServeAsync(tokenSource.Token);
@@ -133,13 +130,7 @@ namespace HoleOverHttp.Test.E2E
             var tokenSource = new CancellationTokenSource();
             using (var scope = _container.BeginLifetimeScope())
             {
-                var callProvider =
-                    scope.Resolve<ReflectCallProviderConnection>(
-                        new NamedParameter("host", "localhost:23333"),
-                        new NamedParameter("namespace", "ns"));
-
-                callProvider.Secure = false;
-                callProvider.RegisterService(new ReflectCallProviderObject());
+                var callProvider = scope.Resolve<ReflectCallProvider>();
                 Task.Run(async () =>
                 {
                     await callProvider.ServeAsync(tokenSource.Token);
@@ -192,13 +183,7 @@ namespace HoleOverHttp.Test.E2E
             var tokenSource = new CancellationTokenSource();
             using (var scope = _container.BeginLifetimeScope())
             {
-                var callProvider =
-                    scope.Resolve<ReflectCallProviderConnection>(
-                        new NamedParameter("host", "localhost:23333"),
-                        new NamedParameter("namespace", "ns"));
-
-                callProvider.Secure = false;
-                callProvider.RegisterService(new ReflectCallProviderObject());
+                var callProvider = scope.Resolve<ReflectCallProvider>();
                 Task.Run(async () =>
                 {
                     await callProvider.ServeAsync(tokenSource.Token);
@@ -222,13 +207,7 @@ namespace HoleOverHttp.Test.E2E
             var tokenSource = new CancellationTokenSource();
             using (var scope = _container.BeginLifetimeScope())
             {
-                var callProvider =
-                    scope.Resolve<ReflectCallProviderConnection>(
-                        new NamedParameter("host", "localhost:23333"),
-                        new NamedParameter("namespace", "ns"));
-
-                callProvider.Secure = false;
-                callProvider.RegisterService(new ReflectCallProviderObject());
+                var callProvider = scope.Resolve<ReflectCallProvider>();
                 Task.Run(async () =>
                 {
                     await callProvider.ServeAsync(tokenSource.Token);
@@ -269,13 +248,7 @@ namespace HoleOverHttp.Test.E2E
             var tokenSource = new CancellationTokenSource();
             using (var scope = _container.BeginLifetimeScope())
             {
-                var callProvider =
-                    scope.Resolve<ReflectCallProviderConnection>(
-                        new NamedParameter("host", "localhost:23333"),
-                        new NamedParameter("namespace", "ns"));
-
-                callProvider.Secure = false;
-                callProvider.RegisterService(new ReflectCallProviderObject());
+                var callProvider = scope.Resolve<ReflectCallProvider>();
                 Task.Run(async () =>
                 {
                     await callProvider.ServeAsync(tokenSource.Token);
