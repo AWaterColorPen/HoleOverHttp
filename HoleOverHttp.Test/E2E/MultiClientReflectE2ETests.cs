@@ -56,7 +56,7 @@ namespace HoleOverHttp.Test.E2E
                 callProvider.RegisterService(new ReflectCallProviderObject());
             }
 
-            Thread.Sleep(TimeSpan.FromSeconds(1));
+            Thread.Sleep(TimeSpan.FromSeconds(2));
         }
 
         [ClassCleanup]
