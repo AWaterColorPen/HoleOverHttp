@@ -86,7 +86,7 @@ namespace HoleOverHttp.Test.E2E
                     await callProvider.ServeAsync(tokenSource.Token);
                 }, CancellationToken.None);
 
-                Thread.Sleep(TimeSpan.FromSeconds(1));
+                Thread.Sleep(TimeSpan.FromSeconds(2));
 
                 var callConnectionPool = scope.Resolve<ICallConnectionPool>();
                 var namespaces1 = callConnectionPool.AllNamespaces.ToList();
