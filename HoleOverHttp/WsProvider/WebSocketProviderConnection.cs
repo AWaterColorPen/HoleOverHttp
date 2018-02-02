@@ -89,13 +89,13 @@ namespace HoleOverHttp.WsProvider
                                 var param = br.ReadBytes((int) ms.Length);
                                 
                                 Log.Verbose($"Receive and start task. id:{new Guid(id)} method:{method}");
-                                var unused = Task.Run(() =>
+                                var unused = Task.Run(async () =>
                                 {
                                     byte[] rt;
                                     var stopwatch = Stopwatch.StartNew();
                                     try
                                     {
-                                        var resultObject = CallFunc(new {method, param});
+                                        var resultObject = await CallFunc(new {method, param});
                                         stopwatch.Stop();
                                         rt = Encoding.UTF8.GetBytes(
                                             JsonConvert.SerializeObject(
