@@ -5,20 +5,14 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using HoleOverHttp.Core;
 using Newtonsoft.Json;
 
 namespace HoleOverHttp.WsProvider
 {
-    public class ReflectCallProviderConnection : CallProviderConnection
+    public class ReflectCallProvider : CallProvider
     {
         private readonly ConcurrentDictionary<string, Tuple<MethodInfo, object>> _methods =
             new ConcurrentDictionary<string, Tuple<MethodInfo, object>>();
-
-        public ReflectCallProviderConnection(string host, string @namespace, IAuthorizationProvider tokenProvider) :
-            base(host, @namespace, tokenProvider)
-        {
-        }
 
         public override void RegisterService(object service)
         {
@@ -40,7 +34,7 @@ namespace HoleOverHttp.WsProvider
             }
         }
 
-        public override Task<object> ProcessCall(string method, byte[] bytes)
+        private Task<object> ProcessCallInternal(string method, byte[] bytes)
         {
             if (string.IsNullOrEmpty(method))
             {
@@ -50,6 +44,18 @@ namespace HoleOverHttp.WsProvider
             var methodInfo = _methods[method].Item1;
             var paramObjects = MethodParameterParser(methodInfo, bytes);
             return Task.Run(() => methodInfo.Invoke(_methods[method].Item2, paramObjects));
+        }
+
+        private static void InputParser(object input, out string method, out byte[] bytes)
+        {
+            var cast = Cast(new { method = "method", bytes = new byte[0] }, input);
+            method = cast.method;
+            bytes = cast.bytes;
+        }
+
+        private static T Cast<T>(T typeHolder, object x)
+        {
+            return typeHolder != null ? (T)x : default(T);
         }
 
         private Task<object> ProvideAvailableMethods()
@@ -71,7 +77,7 @@ namespace HoleOverHttp.WsProvider
             }
 
             return
-                Task.Run(() => (object) _methods.Select(
+                Task.Run(() => (object)_methods.Select(
                     method => new
                     {
                         MethodName = method.Key,
@@ -83,6 +89,12 @@ namespace HoleOverHttp.WsProvider
                     }).ToList());
         }
 
+        public override Task<object> ProcessCall(object input)
+        {
+            InputParser(input, out var method, out var bytes);
+            return ProcessCallInternal(method, bytes);
+        }
+        
         public static object[] MethodParameterParser(MethodInfo methodInfo, byte[] bytes)
         {
             var parameterMap = methodInfo.GetParameters().ToDictionary(v => v.Name, v => v.ParameterType);
