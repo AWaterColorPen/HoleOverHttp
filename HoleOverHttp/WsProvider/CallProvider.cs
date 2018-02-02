@@ -18,7 +18,7 @@ namespace HoleOverHttp.WsProvider
 
         public void RegisterConnection(IProviderConnection providerConnection)
         {
-            providerConnection.CallFunc = ProcessCall;
+            providerConnection.CallFunc = async o => await ProcessCall(o);
             _providerConnectionList.Add(providerConnection);
         }
 

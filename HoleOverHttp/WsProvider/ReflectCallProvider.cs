@@ -34,7 +34,7 @@ namespace HoleOverHttp.WsProvider
             }
         }
 
-        private Task<object> ProcessCallInternal(string method, byte[] bytes)
+        private Task<object> ProcessCallInternal(string method, byte[] param)
         {
             if (string.IsNullOrEmpty(method))
             {
@@ -42,20 +42,14 @@ namespace HoleOverHttp.WsProvider
             }
 
             var methodInfo = _methods[method].Item1;
-            var paramObjects = MethodParameterParser(methodInfo, bytes);
+            var paramObjects = MethodParameterParser(methodInfo, param);
             return Task.Run(() => methodInfo.Invoke(_methods[method].Item2, paramObjects));
         }
 
-        private static void InputParser(object input, out string method, out byte[] bytes)
+        private static void InputParser(object input, out string method, out byte[] param)
         {
-            var cast = Cast(new { method = "method", bytes = new byte[0] }, input);
-            method = cast.method;
-            bytes = cast.bytes;
-        }
-
-        private static T Cast<T>(T typeHolder, object x)
-        {
-            return typeHolder != null ? (T)x : default(T);
+            method = (string) input.GetType().GetProperty("method").GetValue(input);
+            param = (byte[]) input.GetType().GetProperty("param").GetValue(input);
         }
 
         private Task<object> ProvideAvailableMethods()
@@ -91,8 +85,8 @@ namespace HoleOverHttp.WsProvider
 
         public override Task<object> ProcessCall(object input)
         {
-            InputParser(input, out var method, out var bytes);
-            return ProcessCallInternal(method, bytes);
+            InputParser(input, out var method, out var param);
+            return ProcessCallInternal(method, param);
         }
         
         public static object[] MethodParameterParser(MethodInfo methodInfo, byte[] bytes)

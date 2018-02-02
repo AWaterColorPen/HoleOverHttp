@@ -336,9 +336,9 @@ namespace HoleOverHttp.Test.WsProvider
             }
         }
 
-        private static Task<object> CallHelper(CallProvider reflectCallProvider, string method, byte[] bytes)
+        private static Task<object> CallHelper(CallProvider reflectCallProvider, string method, byte[] param)
         {
-            return reflectCallProvider.ProcessCall(new {method, bytes});
+            return reflectCallProvider.ProcessCall(new {method, param});
         }
     }
 }

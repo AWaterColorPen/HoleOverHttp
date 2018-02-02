@@ -11,7 +11,7 @@ namespace HoleOverHttp.Core
 
         string UriPattern { get; set; }
 
-        Func<object, object> CallFunc { get; set; }
+        Func<object, Task<object>> CallFunc { get; set; }
 
         Task ServeAsync(CancellationToken token);
     }

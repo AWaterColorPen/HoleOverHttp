@@ -32,7 +32,7 @@ namespace HoleOverHttp.WsProvider
 
         public string UriPattern { get; set; } = "{0}://{1}/ws/register?ns={2}";
 
-        public Func<object, object> CallFunc { get; set; }
+        public Func<object, Task<object>> CallFunc { get; set; }
 
         public bool Secure { get; set; } = true;
 
