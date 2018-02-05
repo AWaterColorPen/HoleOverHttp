@@ -45,9 +45,19 @@ serverProvider.RegisterService(new ServiceObject());
 var tokenSource = new CancellationTokenSource();
 await serverProvider.ServeAsync(tokenSource.Token);
 ```
+* Client Call Registry
+```
+// create a call registry instance 
+var callConnectionPool = new ReusableCallConnectionPool();
+var webListenerCallRegistry = new WebListenerCallRegistry(callConnectionPool: callConnectionPool, prefixes: new[] { "http://localhost:23333/ws/" }));
+
+// enable remote register
+var tokenSource = new CancellationTokenSource();
+var tokenSource = new CancellationTokenSource();
+webListenerCallRegistry.RegisterRemoteSocket(tokenSource.Token);
+```
 
 * Client Call
 ```
-var callConnectionPool = new ReusableCallConnectionPool();
 var result = callConnectionPool.CallAsync(namespace: "namespace", method: "MethodName", param: Encoding.UTF8.GetBytes("{param:0}")).Result;
 ```
