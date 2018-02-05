@@ -1,6 +1,5 @@
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace HoleOverHttp.Test.E2E
 {
@@ -17,10 +16,7 @@ namespace HoleOverHttp.Test.E2E
 
         public void Start()
         {
-            Task.Run(() =>
-            {
-                _webListenerCallRegistry.RegisterRemoteSocket(_cancellationTokenSource.Token);
-            });
+            var unused = _webListenerCallRegistry.RegisterAsync(_cancellationTokenSource.Token);
         }
         
         public void Dispose()

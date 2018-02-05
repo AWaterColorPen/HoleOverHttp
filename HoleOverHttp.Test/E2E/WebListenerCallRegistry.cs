@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using HoleOverHttp.Core;
 using HoleOverHttp.ReverseCall;
 using Microsoft.Net.Http.Server;
@@ -20,27 +21,30 @@ namespace HoleOverHttp.Test.E2E
             }
         }
 
-        public override void RegisterRemoteSocket(CancellationToken cancellationToken)
+        public override async Task RegisterAsync(CancellationToken cancellationToken)
         {
-            using (var listener = new WebListener(_settings))
+            await Task.Run(() =>
             {
-                listener.Start();
-                while (!cancellationToken.IsCancellationRequested)
+                using (var listener = new WebListener(_settings))
                 {
-                    var context = listener.AcceptAsync().Result;
-                    if (context.IsWebSocketRequest)
+                    listener.Start();
+                    while (!cancellationToken.IsCancellationRequested)
                     {
-                        CallConnectionPool.Activated(() =>
+                        var context = listener.AcceptAsync().Result;
+                        if (context.IsWebSocketRequest)
                         {
-                            var socket = context.AcceptWebSocketAsync().Result;
-                            return new WebsocketCallConnection("ns", socket)
+                            CallConnectionPool.Activated(() =>
                             {
-                                TimeOutSetting = TimeSpan.FromSeconds(5)
-                            };
-                        });
+                                var socket = context.AcceptWebSocketAsync().Result;
+                                return new WebsocketCallConnection("ns", socket)
+                                {
+                                    TimeOutSetting = TimeSpan.FromSeconds(5)
+                                };
+                            });
+                        }
                     }
                 }
-            }
+            }, cancellationToken);
         }
     }
 }

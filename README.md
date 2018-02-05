@@ -49,10 +49,10 @@ await serverProvider.ServeAsync(tokenSource.Token);
 ```
 // create a call registry instance 
 var callConnectionPool = new ReusableCallConnectionPool();
+// have to implementation your own CallRegistry instance
 var webListenerCallRegistry = new WebListenerCallRegistry(callConnectionPool: callConnectionPool, prefixes: new[] { "http://localhost:23333/ws/" }));
 
 // enable remote register
-var tokenSource = new CancellationTokenSource();
 var tokenSource = new CancellationTokenSource();
 webListenerCallRegistry.RegisterRemoteSocket(tokenSource.Token);
 ```

@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using System.Threading.Tasks;
 using HoleOverHttp.Core;
 
 namespace HoleOverHttp.ReverseCall
@@ -12,6 +13,6 @@ namespace HoleOverHttp.ReverseCall
             CallConnectionPool = callConnectionPool;
         }
 
-        public abstract void RegisterRemoteSocket(CancellationToken cancellationToken);
+        public abstract Task RegisterAsync(CancellationToken cancellationToken);
     }
 }
