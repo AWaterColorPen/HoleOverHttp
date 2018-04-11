@@ -84,12 +84,10 @@ namespace HoleOverHttp.ReverseCall
             {
                 WorkUntilDisconnect().Wait();
             }
-            catch (Exception e)
+            catch
             {
-                _socket.CloseOutputAsync(WebSocketCloseStatus.InternalServerError, e.ToString(),
-                    CancellationToken.None).Wait();
-                _socket.CloseAsync(WebSocketCloseStatus.InternalServerError, e.ToString(),
-                    CancellationToken.None).Wait();
+                _socket.CloseOutputAsync(WebSocketCloseStatus.InternalServerError, string.Empty, CancellationToken.None).Wait();
+                _socket.CloseAsync(WebSocketCloseStatus.InternalServerError, string.Empty, CancellationToken.None).Wait();
                 _socket.Abort();
                 _socket.Dispose();
             }
