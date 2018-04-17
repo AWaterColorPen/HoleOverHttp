@@ -50,9 +50,10 @@ namespace HoleOverHttp.WsProvider
         {
             while (!token.IsCancellationRequested)
             {
+                WebSocket socket = null;
                 try
                 {
-                    var socket = await ReconnectAsync();
+                    socket = await ReconnectAsync();
                     var buffer = new byte[4096];
                     var locksend = new object();
                     while (socket.State == WebSocketState.Open)
@@ -142,6 +143,7 @@ namespace HoleOverHttp.WsProvider
                 catch (Exception e)
                 {
                     Log.Error(e, "");
+                    socket?.Abort();
                     await Task.Delay(TimeSpan.FromSeconds(5), token);
                 }
             }
