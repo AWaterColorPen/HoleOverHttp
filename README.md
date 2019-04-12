@@ -10,12 +10,12 @@ The library can help server acoss network security groups and firewall to provid
 ## Usage
 
  * Install 
-```
+```shell
 Install-Package HoleOverHttp
 ```
 
  * Provider Connection
-```
+```cs
 IAuthorizationProvider authorizationProvider = new Mock<IAuthorizationProvider>().Object;
 var providerConnection = new WebSocketProviderConnection(host: "localhost:23333", namespace: "namespace", tokenProvider: authorizationProvider);
 
@@ -24,7 +24,7 @@ providerConnection.Secure = false;
 ```
 
  * Service Object as a class
-```
+```cs
 public class ServiceObject
 {
     public int MethodName(int param)
@@ -35,7 +35,7 @@ public class ServiceObject
 ```
 
  * Server Provider
-```
+```cs
 // register service and connection
 var serverProvider = new ReflectCallProvider();
 serverProvider.RegisterConnection(providerConnection);
@@ -46,7 +46,7 @@ var tokenSource = new CancellationTokenSource();
 await serverProvider.ServeAsync(tokenSource.Token);
 ```
 * Client Call Registry
-```
+```cs
 // create a call registry instance 
 var callConnectionPool = new ReusableCallConnectionPool();
 // have to implementation your own CallRegistry instance
@@ -58,6 +58,6 @@ webListenerCallRegistry.RegisterRemoteSocket(tokenSource.Token);
 ```
 
 * Client Call
-```
+```cs
 var result = callConnectionPool.CallAsync(namespace: "namespace", method: "MethodName", param: Encoding.UTF8.GetBytes("{param:0}")).Result;
 ```
