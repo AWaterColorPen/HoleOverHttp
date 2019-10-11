@@ -1,22 +1,22 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp2.0;netstandard2.0;net451</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.0;netstandard2.1</TargetFrameworks>
     <PackageId>HoleOverHttp</PackageId>
-    <PackageVersion>1.1.2</PackageVersion>
+    <PackageVersion>1.2.0</PackageVersion>
     <Authors>Hellis</Authors>
     <Owners>hellis</Owners>
     <PackageProjectUrl>https://github.com/AWaterColorPen/HoleOverHttp</PackageProjectUrl>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <Description>Library to help providing server api and connection to client. Implementation in C#, targeting .NET Standard 2.0+ . The library can help server acoss network security group and firewall to provider api and connection to multi clients.</Description>
+    <Description>Library to help providing server api and connection to client. Implementation in C#, targeting .NET Standard 2.1 . The library can help server acoss network security group and firewall to provider api and connection to multi clients.</Description>
     <PackageReleaseNotes>Release a stable version.</PackageReleaseNotes>
-    <Copyright>Copyright 2018 (c) hellis</Copyright>
+    <Copyright>Copyright 2019 (c) hellis</Copyright>
     <PackageTags>dotnet-core websocket http connection-pool network-security-groups</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="Serilog" Version="2.6.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="Serilog" Version="2.8.0" />
   </ItemGroup>
 
 </Project>
