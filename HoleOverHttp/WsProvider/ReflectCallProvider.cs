@@ -48,8 +48,8 @@ namespace HoleOverHttp.WsProvider
 
         private static void InputParser(object input, out string method, out byte[] param)
         {
-            method = (string) input.GetType().GetProperty("method").GetValue(input);
-            param = (byte[]) input.GetType().GetProperty("param").GetValue(input);
+            method = (string) input.GetType().GetProperty("method")?.GetValue(input);
+            param = (byte[]) input.GetType().GetProperty("param")?.GetValue(input);
         }
 
         private Task<object> ProvideAvailableMethods()

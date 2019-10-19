@@ -16,7 +16,7 @@ namespace HoleOverHttp.Test.E2E
 
         public void Start()
         {
-            var unused = _webListenerCallRegistry.RegisterAsync(_cancellationTokenSource.Token);
+            _ = _webListenerCallRegistry.RegisterAsync(_cancellationTokenSource.Token);
         }
         
         public void Dispose()

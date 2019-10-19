@@ -3,7 +3,7 @@
 [![NuGet version](https://badge.fury.io/nu/HoleOverHttp.svg)](https://badge.fury.io/nu/HoleOverHttp)
 
 Library to help providing server api and connection to client. 
-Implementation in C#, targeting .NET Standard 2.0+. 
+Implementation in C#, targeting .NET Standard 2.1+. 
 
 The library can help server acoss network security groups and firewall to provider api and connection to multi clients.
 

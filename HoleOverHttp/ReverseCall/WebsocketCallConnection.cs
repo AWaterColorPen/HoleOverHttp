@@ -113,29 +113,27 @@ namespace HoleOverHttp.ReverseCall
             var buffer = new byte[4096];
             while (IsAlive)
             {
-                using (var ms = new MemoryStream())
+                await using var ms = new MemoryStream();
+                while (true)
                 {
-                    while (true)
+                    var result = await _socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
+                    if (result.MessageType == WebSocketMessageType.Binary)
                     {
-                        var result = await _socket.ReceiveAsync(new ArraySegment<byte>(buffer), CancellationToken.None);
-                        if (result.MessageType == WebSocketMessageType.Binary)
-                        {
-                            ms.Write(buffer, 0, result.Count);
-                        }
-
-                        if (!result.EndOfMessage) continue;
-                        ms.Position = 0;
-
-                        try
-                        {
-                            ConsumeOneMessage(ms);
-                        }
-                        catch (Exception e)
-                        {
-                            Log.Error(e, "");
-                        }
-                        break;
+                        ms.Write(buffer, 0, result.Count);
                     }
+
+                    if (!result.EndOfMessage) continue;
+                    ms.Position = 0;
+
+                    try
+                    {
+                        ConsumeOneMessage(ms);
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error(e, "");
+                    }
+                    break;
                 }
             }
         }

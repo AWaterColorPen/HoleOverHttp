@@ -25,23 +25,21 @@ namespace HoleOverHttp.Test.E2E
         {
             await Task.Run(() =>
             {
-                using (var listener = new WebListener(_settings))
+                using var listener = new WebListener(_settings);
+                listener.Start();
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    listener.Start();
-                    while (!cancellationToken.IsCancellationRequested)
+                    var context = listener.AcceptAsync().Result;
+                    if (context.IsWebSocketRequest)
                     {
-                        var context = listener.AcceptAsync().Result;
-                        if (context.IsWebSocketRequest)
+                        CallConnectionPool.Activated(() =>
                         {
-                            CallConnectionPool.Activated(() =>
+                            var socket = context.AcceptWebSocketAsync().Result;
+                            return new WebsocketCallConnection("ns", socket)
                             {
-                                var socket = context.AcceptWebSocketAsync().Result;
-                                return new WebsocketCallConnection("ns", socket)
-                                {
-                                    TimeOutSetting = TimeSpan.FromSeconds(5)
-                                };
-                            });
-                        }
+                                TimeOutSetting = TimeSpan.FromSeconds(5)
+                            };
+                        });
                     }
                 }
             }, cancellationToken);

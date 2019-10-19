@@ -32,10 +32,8 @@ namespace HoleOverHttp.ReverseCall
         {
             return Task.Run(() =>
             {
-                using (var connection = connectionFactory())
-                {
-                    connection.WorkUntilDisconnect(connectionPool);
-                }
+                using var connection = connectionFactory();
+                connection.WorkUntilDisconnect(connectionPool);
             });
         }
     }

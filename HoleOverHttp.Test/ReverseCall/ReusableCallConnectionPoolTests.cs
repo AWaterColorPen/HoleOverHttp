@@ -94,15 +94,9 @@ namespace HoleOverHttp.Test.ReverseCall
             public bool IsAlive { get; set; } = true;
             public TimeSpan TimeOutSetting { get; set; }
 
-            public Task<byte[]> CallAsync(string method, byte[] param)
-            {
-                throw new NotImplementedException();
-            }
+            public Task<byte[]> CallAsync(string method, byte[] param) => throw new NotImplementedException();
 
-            public void WorkUntilDisconnect(ICallConnectionPool callConnectionPool)
-            {
-                throw new NotImplementedException();
-            }
+            public void WorkUntilDisconnect(ICallConnectionPool callConnectionPool) => throw new NotImplementedException();
 
             public void Dispose()
             {
