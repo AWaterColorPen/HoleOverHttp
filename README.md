@@ -1,20 +1,23 @@
 # HoleOverHttp
 
+[![Build status](https://dev.azure.com/hellis/GitHub/_apis/build/status/HoleOverHttp)](https://dev.azure.com/hellis/GitHub/_build/latest?definitionId=2)
 [![NuGet version](https://badge.fury.io/nu/HoleOverHttp.svg)](https://badge.fury.io/nu/HoleOverHttp)
 
-Library to help providing server api and connection to client. 
-Implementation in C#, targeting .NET Standard 2.0+. 
+Library to help providing server api and connection to client.
+Implementation in C#, targeting .NET Standard 2.0+.
 
 The library can help server acoss network security groups and firewall to provider api and connection to multi clients.
 
 ## Usage
 
- * Install 
+- Install
+
 ```shell
 Install-Package HoleOverHttp
 ```
 
- * Provider Connection
+- Provider Connection
+
 ```cs
 IAuthorizationProvider authorizationProvider = new Mock<IAuthorizationProvider>().Object;
 var providerConnection = new WebSocketProviderConnection(host: "localhost:23333", namespace: "namespace", tokenProvider: authorizationProvider);
@@ -23,7 +26,8 @@ var providerConnection = new WebSocketProviderConnection(host: "localhost:23333"
 providerConnection.Secure = false;
 ```
 
- * Service Object as a class
+- Service Object as a class
+
 ```cs
 public class ServiceObject
 {
@@ -34,7 +38,8 @@ public class ServiceObject
 }
 ```
 
- * Server Provider
+- Server Provider
+
 ```cs
 // register service and connection
 var serverProvider = new ReflectCallProvider();
@@ -45,7 +50,9 @@ serverProvider.RegisterService(new ServiceObject());
 var tokenSource = new CancellationTokenSource();
 await serverProvider.ServeAsync(tokenSource.Token);
 ```
-* Client Call Registry
+
+- Client Call Registry
+
 ```cs
 // create a call registry instance 
 var callConnectionPool = new ReusableCallConnectionPool();
@@ -57,7 +64,8 @@ var tokenSource = new CancellationTokenSource();
 webListenerCallRegistry.RegisterRemoteSocket(tokenSource.Token);
 ```
 
-* Client Call
+- Client Call
+
 ```cs
 var result = callConnectionPool.CallAsync(namespace: "namespace", method: "MethodName", param: Encoding.UTF8.GetBytes("{param:0}")).Result;
 ```
