@@ -1,0 +1,43 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-2019'
+
+steps:
+- task: UseDotNet@2
+  inputs:
+    performMultiLevelLookup: true
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: restore
+
+- task: VSBuild@1
+  inputs:
+    platform: 'any cpu'
+    configuration: 'release'
+    clean: true
+    msbuildArchitecture: x64
+
+- task: ResharperCli@2
+  inputs:
+    solutionOrProjectPath: 'HoleOverHttp.sln'
+    failBuildLevelSelector: 'Warning'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: test
+    projects: '**/*Test/*.csproj'
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: pack
+    packagesToPack: HoleOverHttp/HoleOverHttp.csproj
+
+- task: PublishBuildArtifacts@1
