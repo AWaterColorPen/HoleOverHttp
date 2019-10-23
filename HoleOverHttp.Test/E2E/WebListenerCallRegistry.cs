@@ -21,9 +21,9 @@ namespace HoleOverHttp.Test.E2E
             }
         }
 
-        public override async Task RegisterAsync(CancellationToken cancellationToken)
+        public override Task RegisterAsync(CancellationToken cancellationToken)
         {
-            await Task.Run(() =>
+            return Task.Run(() =>
             {
                 using var listener = new WebListener(_settings);
                 listener.Start();

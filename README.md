@@ -1,6 +1,6 @@
 # HoleOverHttp
 
-[![Build status](https://dev.azure.com/hellis/GitHub/_apis/build/status/HoleOverHttp)](https://dev.azure.com/hellis/GitHub/_build/latest?definitionId=2)
+[![Build Status](https://dev.azure.com/hellis/GitHub/_apis/build/status/AWaterColorPen.HoleOverHttp?branchName=master)](https://dev.azure.com/hellis/GitHub/_build/latest?definitionId=4&branchName=master)
 [![NuGet version](https://badge.fury.io/nu/HoleOverHttp.svg)](https://badge.fury.io/nu/HoleOverHttp)
 
 Library to help providing server api and connection to client.
